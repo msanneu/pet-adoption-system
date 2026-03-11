@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings | PetAdopt Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-navy: #1a2a3a; --accent-gold: #c5a059; --bg-dashboard: #fdfdfb; --border-light: rgba(0,0,0,0.06); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dashboard); color: #333; }
+        h2, h5 { font-family: 'Playfair Display', serif; }
+        .nav-adopter { background: #fff; border-bottom: 1px solid var(--border-light); padding: 18px 0; }
+        .portal-logo { letter-spacing: 2px; font-weight: 700; color: var(--primary-navy); text-decoration: none; }
+        .card-setting { border: 1px solid var(--border-light); border-radius: 0; background: #fff; }
+        .form-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-gold); letter-spacing: 1px; }
+        .form-control { border-radius: 0; padding: 12px; }
+        .btn-navy { background: var(--primary-navy); color: white; border-radius: 0; font-weight: 600; text-transform: uppercase; }
+        .btn-navy:hover { background: #2c3e50; color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="nav-adopter mb-5 sticky-top shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="/" class="portal-logo">PETADOPT <span style="color: var(--accent-gold);">PORTAL</span></a>
+        <div class="d-flex gap-4 align-items-center">
+            <a href="/dashboard" class="btn btn-sm btn-outline-secondary rounded-0 px-3 fw-bold" style="font-size: 0.7rem;">← BACK TO DASHBOARD</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-4">Account Settings</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} rounded-0 mb-4 small shadow-sm border-0">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card card-setting p-4 shadow-sm mb-4" style="border-top: 4px solid var(--primary-navy);">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Personal Information</h5>
+                <form action="{{ url_for('adopter_profile') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Full Legal Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ user.full_name }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                        <div class="form-text text-muted" style="font-size: 0.7rem;">Note: Changing your email will require re-verification.</div>
+                    </div>
+                    <button type="submit" class="btn btn-navy px-4">Save Changes</button>
+                </form>
+            </div>
+
+            <div class="card card-setting p-4 shadow-sm mb-4" style="border-top: 4px solid var(--accent-gold);">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Security</h5>
+                <form action="{{ url_for('adopter_password') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="current_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="new_password" class="form-control" required minlength="8">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-navy px-4">Update Password</button>
+                </form>
+            </div>
+
+            <div class="card card-setting p-4 shadow-sm border-danger">
+                <h5 class="fw-bold text-danger mb-3 border-bottom border-danger pb-2">Danger Zone</h5>
+                <p class="small text-muted mb-4">Deleting your account is permanent. Your past adoption records will be retained anonymously for sanctuary legal compliance, but you will lose all dashboard access.</p>
+                <form action="{{ url_for('delete_account') }}" method="POST" onsubmit="return confirm('Are you absolutely sure you want to permanently delete your account?');">
+                    <button type="submit" class="btn btn-danger rounded-0 fw-bold px-4 text-uppercase">Delete My Account</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

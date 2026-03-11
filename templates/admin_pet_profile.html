@@ -1,0 +1,115 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<div class="mb-4">
+    <a href="javascript:history.back()" class="text-decoration-none text-muted small fw-bold text-uppercase">
+        &larr; Back to Previous Page
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card p-4 border-0 shadow-sm" style="border-top: 4px solid var(--accent-gold) !important;">
+            <img src="{{ url_for('static', filename='uploads/' + pet.photo) if pet.photo else 'https://via.placeholder.com/300' }}" 
+                 class="img-fluid rounded mb-3 shadow-sm" style="object-fit: cover; max-height: 350px; width: 100%;">
+            
+            <h3 class="fw-bold text-center mb-1" style="color: var(--primary-navy);">{{ pet.name }}</h3>
+            <p class="text-center text-muted small text-uppercase mb-3" style="letter-spacing: 1px;">{{ pet.breed }}</p>
+            
+            <div class="text-center mb-4">
+                <span class="badge {% if pet.status == 'Available' %}bg-success{% elif pet.status == 'Approved' %}bg-navy{% elif pet.status == 'Adopted' %}bg-secondary{% else %}bg-warning text-dark{% endif %} w-100 py-2 rounded-0" style="letter-spacing: 2px;">
+                    STATUS: {{ pet.status|upper }}
+                </span>
+            </div>
+            
+            <a href="{{ url_for('edit_pet', pet_id=pet.id) }}" class="btn btn-sm btn-outline-secondary w-100 fw-bold rounded-0" style="font-size: 0.7rem;">
+                EDIT RECORD
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        
+        <div class="card p-4 border-0 shadow-sm mb-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2" style="color: var(--primary-navy);">Physical & Medical Profile</h5>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-3"><span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Age</span><br><strong>{{ pet.age_category }}</strong></div>
+                <div class="col-md-3"><span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Gender</span><br><strong>{{ pet.gender }}</strong></div>
+                <div class="col-md-3"><span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Size</span><br><strong>{{ pet.size }}</strong></div>
+                <div class="col-md-3"><span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Energy</span><br><strong>{{ pet.energy_level }}</strong></div>
+            </div>
+            
+            <div class="row g-3 bg-light p-3 border">
+                <div class="col-md-4">
+                    <span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Vaccination</span><br>
+                    <strong>{{ pet.vac_status }}</strong><br>
+                    <small class="text-muted" style="font-size: 0.7rem;">Date: {{ pet.vac_date if pet.vac_date else 'N/A' }}</small>
+                </div>
+                <div class="col-md-4">
+                    <span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Spayed/Neutered</span><br>
+                    <strong>{{ pet.spayed_neutered }}</strong>
+                </div>
+                <div class="col-md-4">
+                    <span class="small text-muted text-uppercase" style="font-size: 0.65rem;">Special Needs</span><br>
+                    <strong class="{% if pet.special_needs and pet.special_needs != 'N/A' %}text-danger{% endif %}">
+                        {{ pet.special_needs }}
+                    </strong>
+                </div>
+            </div>
+            
+            {% if pet.other_description %}
+            <div class="mt-4 pt-3 border-top">
+                <span class="small text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Behavioral Notes / Description</span>
+                <p class="mb-0 mt-1 small">{{ pet.other_description }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card p-4 border-0 shadow-sm">
+            <h5 class="fw-bold mb-3 border-bottom pb-2" style="color: var(--primary-navy);">Application History</h5>
+            
+            {% if pet.applications %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="text-muted" style="font-size: 0.65rem; letter-spacing: 1px;">
+                                <th>DATE</th>
+                                <th>APPLICANT</th>
+                                <th>APP ID</th>
+                                <th>OUTCOME</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pet.applications|sort(attribute='application.application_date', reverse=True) %}
+                            <tr>
+                                <td class="small">{{ item.application.application_date.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    {% if item.application.user_id %}
+                                        <a href="{{ url_for('admin_view_adopter', user_id=item.application.user_id) }}" class="text-decoration-none fw-bold" style="color: var(--primary-navy);">
+                                            {{ item.application.adopter_name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="fw-bold">{{ item.application.adopter_name }}</span> <small class="text-muted">(Deleted)</small>
+                                    {% endif %}
+                                </td>
+                                <td class="small text-muted">#APP-{{ item.application.id }}</td>
+                                <td>
+                                    <span class="badge rounded-0 {% if item.application.status == 'Claimed' %}bg-success{% elif item.application.status == 'Declined' %}bg-danger{% elif 'Return' in item.application.status %}bg-warning text-dark{% else %}bg-secondary{% endif %}" style="font-size: 0.6rem;">
+                                        {{ item.application.status|upper }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted small italic mb-0 py-3 text-center border bg-light">No adoption applications have been submitted for {{ pet.name }} yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

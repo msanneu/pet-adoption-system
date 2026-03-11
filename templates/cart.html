@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Review | PetAdopt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --primary-navy: #1a2a3a; --accent-gold: #c5a059; --bg-cream: #fdfdfb; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
+        .form-card { background: #fff; border: 1px solid #e0e0e0; padding: 40px; border-radius: 0; }
+        .btn-classic { background: var(--accent-gold); color: white; border: none; padding: 12px; border-radius: 0; text-transform: uppercase; font-weight: 600; width: 100%; }
+    </style>
+</head>
+<body>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="form-card shadow-sm">
+                <div class="d-flex justify-content-start mb-3">
+    <a href="{{ url_for('index') }}" class="text-decoration-none text-muted small fw-bold d-flex align-items-center">
+        <svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        BACK TO GALLERY
+    </a>
+</div>
+                <h2 class="fw-bold mb-4">Review Your Application</h2>
+                
+                <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--accent-gold);">Selected Companions</h6>
+                <div class="list-group mb-4">
+                    {% for pet in pets %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center rounded-0">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}" style="width: 50px; height: 50px; object-fit: cover;">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ pet.name }}</h6>
+                                <small class="text-muted">{{ pet.breed }}</small>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('remove_from_cart', pet_id=pet.id) }}" class="text-danger small">Remove</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form action="/submit_application" method="POST" enctype="multipart/form-data">
+                    
+                    <h6 class="text-uppercase small fw-bold mt-4 mb-3" style="color: var(--primary-navy); border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;">1. Personal Details</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Full Legal Name</label>
+                            <input type="text" name="name" class="form-control rounded-0" placeholder="Juan Dela Cruz" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Email Address</label>
+                            <input type="email" name="email" class="form-control rounded-0" placeholder="juan@email.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Phone Number</label>
+                            <input type="text" name="phone" class="form-control rounded-0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Occupation</label>
+                            <input type="text" name="occupation" class="form-control rounded-0" required>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase small fw-bold mt-4 mb-3" style="color: var(--primary-navy); border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;">2. Household & Environment</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase">Home Type</label>
+                            <select name="q_home_type" class="form-select rounded-0" onchange="toggleInput(this, 'home_other')" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="House">House</option>
+                                <option value="Apartment">Apartment</option>
+                                <option value="Condominium">Condominium</option>
+                                <option value="Other">Other (Specify)</option>
+                            </select>
+                            <input type="text" name="q_home_type_other" id="home_other" class="form-control rounded-0 mt-2 d-none" placeholder="Please specify...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase">Yard Access</label>
+                            <select name="q_yard_access" class="form-select rounded-0" onchange="toggleInput(this, 'yard_other')" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="Fully Fenced">Fully Fenced</option>
+                                <option value="Partially Fenced">Partially Fenced</option>
+                                <option value="No Yard/Balcony">No Yard/Balcony</option>
+                                <option value="Other">Other (Specify)</option>
+                            </select>
+                            <input type="text" name="q_yard_access_other" id="yard_other" class="form-control rounded-0 mt-2 d-none" placeholder="Please specify...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-uppercase">Household Size</label>
+                            <select name="household_size" class="form-select rounded-0" onchange="toggleInput(this, 'house_size_other')" required>
+                                <option value="1 (Living Alone)">1 (Living Alone)</option>
+                                <option value="2-3 People">2-3 People</option>
+                                <option value="4+ People">4+ People</option>
+                                <option value="Other">Other (Specify)</option>
+                            </select>
+                            <input type="text" name="household_size_other" id="house_size_other" class="form-control rounded-0 mt-2 d-none" placeholder="E.g., Multi-family home">
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase small fw-bold mt-4 mb-3" style="color: var(--primary-navy); border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;">3. Capability & History</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Hours left alone daily</label>
+                            <select name="q_hours_alone" class="form-select rounded-0" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="0-4 hours">0 - 4 hours</option>
+                                <option value="4-8 hours">4 - 8 hours</option>
+                                <option value="8+ hours">8+ hours</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Other Pets at Home</label>
+                            <select name="other_pets" class="form-select rounded-0" onchange="toggleInput(this, 'pets_other')" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="None">None</option>
+                                <option value="1 Dog">1 Dog</option>
+                                <option value="1 Cat">1 Cat</option>
+                                <option value="Other">Multiple / Other (Specify)</option>
+                            </select>
+                            <input type="text" name="other_pets_other" id="pets_other" class="form-control rounded-0 mt-2 d-none" placeholder="E.g., 2 Cats and a Bird">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Financial Readiness</label>
+                            <select name="financial_readiness" class="form-select rounded-0" onchange="toggleInput(this, 'finance_other')" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="Prepared for routine and emergency care">Prepared for routine and emergency care</option>
+                                <option value="Need assistance with emergency care">Need assistance with emergency care</option>
+                                <option value="Other">Other (Specify)</option>
+                            </select>
+                            <input type="text" name="financial_readiness_other" id="finance_other" class="form-control rounded-0 mt-2 d-none" placeholder="Please specify...">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Ever surrendered a pet?</label>
+                            <select name="surrendered_pet" class="form-select rounded-0" onchange="toggleInput(this, 'surrender_other', 'Yes')" required>
+                                <option value="" disabled selected>Select...</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                            <input type="text" name="surrendered_pet_other" id="surrender_other" class="form-control rounded-0 mt-2 d-none" placeholder="If yes, please explain briefly...">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-uppercase">Past Pet Experience</label>
+                            <textarea name="q_pet_experience" class="form-control rounded-0" rows="2" placeholder="Describe your experience raising animals..." required></textarea>
+                        </div>
+                    </div>
+
+                    <h6 class="text-uppercase small fw-bold mt-4 mb-3" style="color: var(--primary-navy); border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;">4. Required Attachments</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Government ID</label>
+                            <input type="file" name="id_proof" class="form-control rounded-0" accept="image/*" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-uppercase">Photo of Living Space</label>
+                            <input type="file" name="home_picture" class="form-control rounded-0" accept="image/*" required>
+                            <small class="text-muted" style="font-size: 0.65rem;">Show where the pet will sleep/spend time.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4 p-3 bg-light border">
+                        <input class="form-check-input ms-1" type="checkbox" name="send_email_copy" id="sendCopyCheck" checked>
+                        <label class="form-check-label ms-2 small fw-bold" for="sendCopyCheck">
+                            Email a copy of these responses to me for my records.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-classic">Submit Formal Application</button>
+                    <div class="text-center mt-3"><a href="/" class="text-muted small">Cancel and Return</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function toggleInput(selectElement, inputId, triggerValue = 'Other') {
+    const inputElement = document.getElementById(inputId);
+    if (selectElement.value === triggerValue) {
+        inputElement.classList.remove('d-none');
+        inputElement.setAttribute('required', 'required');
+    } else {
+        inputElement.classList.add('d-none');
+        inputElement.removeAttribute('required');
+        inputElement.value = '';
+    }
+}
+</script>
+</body>
+</html>

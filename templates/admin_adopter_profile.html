@@ -1,0 +1,166 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<div class="mb-4">
+    <a href="javascript:history.back()" class="text-decoration-none text-muted small fw-bold text-uppercase">
+        &larr; Back to Previous Page
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card p-4 border-0 shadow-sm" style="border-top: 4px solid var(--primary-navy) !important;">
+            <h6 class="text-uppercase small fw-bold text-muted mb-4 ls-1">Adopter Credentials</h6>
+            
+            <div class="text-center mb-4">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <svg width="32" height="32" fill="var(--accent-gold)" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                    </svg>
+                </div>
+                <h4 class="fw-bold mb-1">{{ adopter.full_name }}</h4>
+                <p class="text-muted small mb-2">{{ adopter.email }}</p>
+                
+                {% if adopter.is_verified %}
+                    <span class="badge bg-success rounded-pill px-3 py-2">
+                        <svg width="12" height="12" fill="currentColor" class="me-1 mb-1" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg> 
+                        Verified Account
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Unverified Email</span>
+                {% endif %}
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small text-muted">Total Applications:</span>
+                <span class="fw-bold">{{ applications|length }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="small text-muted">Active Placements:</span>
+                <span class="fw-bold">{{ applications|selectattr('status', 'equalto', 'Claimed')|list|length }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <h5 class="fw-bold mb-3">Application History</h5>
+        
+        {% if applications %}
+            {% for app in applications %}
+            <div class="card p-4 border-0 shadow-sm mb-3" style="border-left: 4px solid {% if app.status == 'Claimed' %}#198754{% elif app.status == 'Declined' %}#dc3545{% elif 'Return' in app.status %}#ffc107{% else %}#1a2a3a{% endif %};">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-1">APP-{{ app.id }}</h6>
+                        <small class="text-muted">{{ app.application_date.strftime('%B %d, %Y') }}</small>
+                    </div>
+                    <span class="badge {% if app.status == 'Claimed' %}bg-success{% elif app.status == 'Declined' %}bg-danger{% elif 'Return' in app.status %}bg-warning text-dark{% else %}bg-navy{% endif %} rounded-0">
+                        {{ app.status }}
+                    </span>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap mb-3 p-2 bg-light border">
+                    {% for item in app.items %}
+                        <a href="{{ url_for('admin_view_pet', pet_id=item.pet.id) }}" 
+                           class="badge border border-primary text-primary fw-bold bg-white text-decoration-none shadow-sm" 
+                           style="font-size: 0.7rem;" title="View Pet Profile">
+                            {{ item.pet.name }} &nearr;
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-secondary w-100 fw-bold rounded-0" style="font-size: 0.7rem;" data-bs-toggle="modal" data-bs-target="#viewResponseModal{{ app.id }}">
+                    VIEW SUBMITTED QUESTIONNAIRE
+                </button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card p-5 border-0 shadow-sm text-center text-muted">
+                <p class="mb-0 italic small">This user has not submitted any applications yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div> {% if applications %}
+    {% for app in applications %}
+    <div class="modal fade" id="viewResponseModal{{ app.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-0 border-0 shadow-lg">
+                <div class="modal-header border-0 bg-light">
+                    <h5 class="fw-bold mb-0 text-uppercase small ls-1">Application File #{{ app.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <div class="row g-3">
+                        <div class="col-12 mb-2 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">Household & Environment</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Home Type:</strong> {{ app.q_home_type }}</p></div>
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Yard Access:</strong> {{ app.q_yard_access }}</p></div>
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Household Size:</strong> {{ app.household_size }}</p></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mb-2 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">Capability & History</h6>
+                            <div class="row g-2">
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Hours Left Alone:</strong> {{ app.q_hours_alone }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Other Pets:</strong> {{ app.other_pets }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Financial Readiness:</strong> {{ app.financial_readiness }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Ever Surrendered a Pet:</strong> {{ app.surrendered_pet }}</p></div>
+                                <div class="col-12 mt-2">
+                                    <p class="mb-1 small border p-3 bg-light text-muted">
+                                        <strong class="text-dark">Past Pet Experience:</strong><br> 
+                                        {{ app.q_pet_experience }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">Attached Documents</h6>
+                            <div class="d-flex justify-content-start gap-3 flex-wrap mt-3">
+                                {% if app.id_proof %}
+                                    <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.id_proof) }}')" class="btn btn-sm btn-gold-outline shadow-sm" style="border: 1px solid #c5a059; color: #c5a059; background: transparent; padding: 8px 16px; font-weight: 600;">
+                                        View Government ID
+                                    </button>
+                                {% endif %}
+
+                                {% if app.home_picture %}
+                                    <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.home_picture) }}')" class="btn btn-sm btn-gold-outline shadow-sm" style="border: 1px solid #c5a059; color: #c5a059; background: transparent; padding: 8px 16px; font-weight: 600;">
+                                        View Home Picture
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+<div class="modal fade" id="imageViewerModal" tabindex="-1" style="z-index: 1060;" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 bg-transparent">
+            <div class="modal-header border-0 d-flex justify-content-center pb-0">
+                <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow" data-bs-dismiss="modal">
+                    &times; EXIT IMAGE
+                </button>
+            </div>
+            <div class="modal-body text-center pt-3">
+                <img id="fullSizeImage" src="" class="img-fluid rounded shadow-lg" style="max-height: 80vh; border: 4px solid white;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openImageViewer(imageSrc) {
+    document.getElementById('fullSizeImage').src = imageSrc;
+    var imageModal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
+    imageModal.show();
+}
+</script>
+{% endblock %}

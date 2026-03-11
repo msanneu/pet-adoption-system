@@ -1,0 +1,163 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Staff Management</h2>
+    <button class="btn btn-navy px-4" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+        + REGISTER NEW STAFF
+    </button>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="card p-4 border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr style="font-size: 0.7rem; color: #888;">
+                    <th>STAFF USERNAME</th>
+                    <th>ROLE</th>
+                    <th class="text-end">MANAGEMENT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in all_admins %}
+                <tr>
+                    <td class="fw-bold">{{ admin.username }}</td>
+                    <td>
+                        {% if admin.is_default %}
+                        <span class="badge bg-primary text-white border">System Admin</span>
+                        {% else %}
+                        <span class="badge bg-light text-dark border">Authorized Staff</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#changePassModal{{ admin.id }}">
+                            CHANGE PASSWORD
+                        </button>
+
+                        {% if admin.id != session.get('admin_id') and not admin.is_default %}
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#revokeModal{{ admin.id }}">
+                            REVOKE ACCESS
+                        </button>
+                        {% elif admin.id == session.get('admin_id') %}
+                        <span class="badge bg-navy px-3 ms-2">YOU</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="changePassModal{{ admin.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header border-0">
+                                <h5 class="fw-bold">Update Password for {{ admin.username }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="{{ url_for('update_admin_password', admin_id=admin.id) }}" method="POST">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label-sm">Current Password</label>
+                                        <input type="password" name="current_password" class="form-control" placeholder="Enter your current password" required>
+                                    </div>
+                                    <hr class="text-muted">
+                                    <div class="mb-3">
+                                        <label class="form-label-sm">New Password</label>
+                                        <input type="password" name="new_password" class="form-control" required minlength="8">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label-sm">Confirm New Password</label>
+                                        <input type="password" name="confirm_password" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0">
+                                    <button type="submit" class="btn btn-navy w-100">UPDATE PASSWORD</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="revokeModal{{ admin.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-0 border-0 shadow-lg">
+                            <div class="modal-header border-0 bg-danger text-white">
+                                <h6 class="fw-bold mb-0 text-uppercase ls-1">Security Authorization Required</h6>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form action="{{ url_for('delete_admin', admin_id=admin.id) }}" method="POST">
+                                <div class="modal-body p-4 text-center">
+                                    <p class="text-danger fw-bold mb-1">WARNING: Destructive Action</p>
+                                    <p class="text-muted small mb-4">You are about to permanently revoke system access for <strong>{{ admin.username }}</strong>. This action cannot be undone.</p>
+                                    
+                                    <div class="text-start">
+                                        <label class="form-label small fw-bold text-uppercase">Verify Your Admin Password</label>
+                                        <input type="password" name="auth_password" class="form-control rounded-0" placeholder="Type your password to confirm" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 justify-content-center pb-4">
+                                    <button type="button" class="btn btn-light rounded-0 px-4" data-bs-dismiss="modal">CANCEL</button>
+                                    <button type="submit" class="btn btn-danger rounded-0 px-4 fw-bold">AUTHORIZE DELETION</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addStaffModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <h5 class="fw-bold">New Staff Credential</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('add_admin') }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-sm">Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-sm">Password</label>
+                        <input type="password" name="password" class="form-control" required minlength="8">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-sm">Confirm Password</label>
+                        <input type="password" name="confirm_password" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-navy w-100">CREATE ACCOUNT</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const pass = form.querySelector('input[name*="password"]:not([name*="confirm"])').value;
+        const confirm = form.querySelector('input[name="confirm_password"]');
+        
+        if (confirm && pass !== confirm.value) {
+            e.preventDefault();
+            alert("Passwords do not match!");
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Login' if mode == 'login' else 'Register' }} | PetAdopt Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary-navy: #1a2a3a; 
+            --accent-gold: #c5a059; 
+            --bg-cream: #fdfdfb;
+        }
+        body { 
+            background-color: var(--bg-cream); 
+            font-family: 'Inter', sans-serif; 
+            height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .auth-card { 
+            max-width: 450px; 
+            width: 100%;
+            margin: auto; 
+            border: 1px solid rgba(0,0,0,0.05); 
+            background: white; 
+            padding: 50px; 
+        }
+        h2 { font-family: 'Playfair Display', serif; color: var(--primary-navy); }
+        
+        .btn-google { 
+            background: white; 
+            border: 1px solid #ddd; 
+            color: #555; 
+            font-weight: 600; 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            transition: all 0.2s;
+            border-radius: 0;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .btn-google:hover { background: #f8f9fa; border-color: #ccc; color: #333; }
+
+        .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #eee; }
+        .divider span { padding: 0 15px; color: #bbb; font-size: 0.7rem; letter-spacing: 1px; font-weight: 700; }
+        
+        .form-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--accent-gold); }
+        .form-control { 
+            border-radius: 0; 
+            padding: 12px; 
+            border: 1px solid #eee; 
+            font-size: 0.9rem; 
+        }
+        .form-control:focus { 
+            border-color: var(--accent-gold); 
+            box-shadow: none; 
+            background-color: #fcfcfc;
+        }
+        
+        .btn-auth { 
+            background: var(--primary-navy); 
+            border: none; 
+            letter-spacing: 1px; 
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+        .btn-auth:hover { opacity: 0.9; color: white; }
+
+        .back-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 30px; 
+            font-size: 0.75rem; 
+            text-decoration: none; 
+            color: #999; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+        .back-link:hover { color: var(--primary-navy); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="auth-card shadow-sm">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1">
+                {{ 'Welcome Back' if mode == 'login' else 'Join PetAdopt' }}
+            </h2>
+            <p class="text-muted small">Standard Guardian Access</p>
+        </div>
+
+        <a href="{{ url_for('google_login') }}" class="btn btn-google d-flex align-items-center justify-content-center gap-2">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18">
+            Continue with Google
+        </a>
+
+        <div class="divider"><span>OR USE EMAIL</span></div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} rounded-0 small py-2">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            {% if mode == 'register' %}
+            <div class="mb-3">
+                <label class="form-label text-uppercase">Full Legal Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Juan Dela Cruz" required>
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label class="form-label text-uppercase">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="juan@email.com" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label text-uppercase">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-auth w-100 py-3 rounded-0 text-white">
+                {{ 'LOGIN' if mode == 'login' else 'CREATE ACCOUNT' }}
+            </button>
+        </form>
+
+        <div class="text-center mt-4">
+            {% if mode == 'login' %}
+            <p class="small text-muted">New here? <a href="{{ url_for('adopter_register') }}" style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">Create an account</a></p>
+            {% else %}
+            <p class="small text-muted">Already have an account? <a href="{{ url_for('adopter_login') }}" style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">Log in here</a></p>
+            {% endif %}
+        </div>
+
+        <a href="/" class="back-link">← Return to Gallery</a>
+    </div>
+</div>
+</body>
+</html>

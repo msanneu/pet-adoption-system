@@ -1,0 +1,79 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Adoption Archive</h2>
+        <span class="badge bg-navy px-3 py-2">{{ history_apps|length }} Total Records</span>
+    </div>
+
+    <div class="card p-4 border-0 shadow-sm mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h5 class="text-muted fw-bold mb-0 text-uppercase small ls-1"> Transactions</h5>
+            <a href="{{ url_for('export_history') }}" class="btn btn-outline-secondary btn-sm rounded-0 fw-bold px-3">
+                <svg width="12" height="12" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                DOWNLOAD CSV
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle table-hover">
+                <thead class="bg-light">
+                    <tr style="font-size: 0.6rem; color: #888;">
+                        <th>APPLICATION</th>
+                        <th>SUBMITTED</th>
+                        <th>APPROVED</th>
+                        <th>APPOINTMENT</th>
+                        <th class="text-end">FINALIZED ON</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in history_apps %}
+                    <tr>
+                        <td class="small fw-bold">#APP-{{ app.id }} <br> <span class="text-muted" style="font-size: 0.6rem;">{{ app.adopter_name }}</span></td>
+                        <td class="small text-muted">{{ app.application_date.strftime('%b %d, %H:%M') if app.application_date }}</td>
+                        <td class="small text-muted">{{ app.approval_date.strftime('%b %d, %H:%M') if app.approval_date else 'N/A' }}</td>
+                        <td class="small text-muted">{{ app.pickup_date.strftime('%b %d, %H:%M') if app.pickup_date else 'N/A' }}</td>
+                        <td class="text-end small text-muted">
+                            {% if app.status == 'Claimed' %}
+                                <span class="text-success fw-bold">Claimed: {{ app.claim_date.strftime('%b %d, %H:%M') if app.claim_date else 'N/A' }}</span>
+                            {% elif app.status == 'Returned' %}
+                                <span class="text-danger fw-bold">Returned: {{ app.return_date.strftime('%b %d, %H:%M') if app.return_date else 'N/A' }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center py-5 text-muted small italic">No archived transactions found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card p-4 border-0 shadow-sm">
+        <h5 class="fw-bold mb-4 text-muted text-uppercase small ls-1 border-bottom pb-3">System Activity Logs</h5>
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <table class="table align-middle table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th style="font-size: 0.7rem;">Timestamp</th>
+                        <th style="font-size: 0.7rem;">Staff Identity</th>
+                        <th style="font-size: 0.7rem;">Action Performed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="small text-muted">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td><span class="badge rounded-0 border text-dark fw-bold" style="font-size: 0.65rem;">{{ log.admin_username }}</span></td>
+                        <td class="small text-dark">{{ log.action }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" class="text-center py-4 text-muted small">No system activity recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

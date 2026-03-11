@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal | PetAdopt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-navy: #1a2a3a; --accent-gold: #c5a059; --bg-dashboard: #fdfdfb; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dashboard); }
+        .sidebar { height: 100vh; width: 260px; position: fixed; background: var(--primary-navy); color: white; padding-top: 30px; }
+        .main-content { margin-left: 260px; padding: 40px; }
+        .nav-link { color: rgba(255,255,255,0.7); font-size: 0.85rem; letter-spacing: 1px; padding: 15px 30px; }
+        .nav-link:hover, .nav-link.active { color: var(--accent-gold); background: rgba(255,255,255,0.05); }
+        .brand-logo { font-family: 'Playfair Display'; padding: 0 30px 40px; color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+    <div class="sidebar shadow">
+        <h3 class="brand-logo">PetAdopt <span class="small d-block text-white opacity-50">Staff Portal</span></h3>
+        <nav class="nav flex-column">
+            <a class="nav-link" href="{{ url_for('admin_dashboard') }}"> OVERVIEW</a>
+            <a class="nav-link" href="{{ url_for('admin_inventory') }}"> INVENTORY</a>
+            <a class="nav-link" href="{{ url_for('admin_schedule') }}"> SCHEDULE</a>
+            <a class="nav-link" href="{{ url_for('admin_archive') }}"> ARCHIVE</a>
+            <a class="nav-link" href="{{ url_for('admin_adopters') }}"> ADOPTERS</a>
+            <a class="nav-link" href="{{ url_for('manage_staff') }}"> STAFF</a>
+            
+
+            <a class="nav-link border-top mt-2 pt-3" href="{{ url_for('index') }}" target="_blank" 
+                style="color: var(--accent-gold); font-size: 0.75rem;">
+                     VIEW PUBLIC SITE
+                </a>
+
+            <hr class="mx-4 opacity-10">
+            <a class="nav-link text-danger" href="/admin/logout">LOGOUT</a>
+        </nav>
+    </div>
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { 
+    --primary-navy: #1a2a3a; 
+    --accent-gold: #c5a059; 
+    --your-color: #4b463b;
+}
+body { background-color: #f4f4f2; font-family: 'Inter', sans-serif; }
+h2, h5 { font-family: 'Playfair Display', serif; color: var(--primary-navy); }
+.card { border-radius: 0; border: 1px solid #e0e0e0; }
+.btn-primary { background: var(--primary-navy); border: none; border-radius: 0; text-transform: uppercase; font-weight: 600; }
+.btn-outline-primary { border: 1px solid var(--primary-navy); color: var(--primary-navy); border-radius: 0; }
+.form-control { border-radius: 0; }
+
+    .btn-effect {
+        background-color: var(--your-color) !important;
+        color: white !important;
+        border: none;
+        border-radius: 0;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 1px;
+        transition: all 0.2s ease-in-out; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-effect:hover {
+        filter: brightness(1.2); 
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+    }
+
+    .btn-effect:active {
+        transform: translateY(0); 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Admin Accounts</h2>
+            <div class="text-muted small">Manage staff access</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">View Site</a>
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+            <a href="/admin/logout" class="btn btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="mb-3">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mb-2" role="alert">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="row g-3">
+        <div class="col-md-5">
+            <div class="card p-4">
+                <h5 class="fw-bold mb-3">Create Admin Account</h5>
+                <form method="POST">
+                    <input type="text" name="username" class="form-control mb-2" placeholder="Username" required>
+                    <input type="password" name="password" class="form-control mb-2" placeholder="Password" required>
+                    <input type="password" name="confirm_password" class="form-control mb-3" placeholder="Confirm Password" required>
+                    <button type="submit" class="btn btn-navy w-100 py-3 shadow-sm" 
+        style="background-color: #4b463b; color: white; border: none; letter-spacing: 1px; transition: all 0.3s ease;">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="me-2">
+        <path d="M12 4v16m8-8H4"></path>
+    </svg>
+    CREATE ADMIN ACCOUNT
+</button>                </form>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Existing Admins</h5>
+                    <span class="badge bg-light text-dark">{{ admins|length }} total</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Status</th>
+                                <th>Action</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for admin in admins %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ admin.username }}</div>
+                                    {% if admin.id == current_admin.id %}
+                                    <div class="text-muted small">You</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if admin.force_password_change %}
+                                    <span class="badge bg-warning text-dark">Password change required</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ url_for('edit_admin', admin_id=admin.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">Edit</a>
+                                        
+                                        {% if admin.id != current_admin.id %}
+                                        <a href="{{ url_for('delete_admin', admin_id=admin.id) }}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           onclick="return confirm('Are you sure you want to remove this admin account?')">
+                                           Delete
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted small italic">Main Account</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">No admin accounts found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Adopter Directory</h2>
+    <span class="badge bg-navy px-3 py-2">{{ adopters|length }} Total Registered Users</span>
+</div>
+
+<div class="card p-4 border-0 shadow-sm mb-4">
+    <form action="{{ url_for('admin_adopters') }}" method="GET" class="d-flex gap-2">
+        <input type="text" name="search" class="form-control rounded-0" placeholder="Search by adopter name or email..." value="{{ request.args.get('search', '') }}">
+        <button type="submit" class="btn btn-navy rounded-0 px-4 fw-bold">SEARCH</button>
+        {% if request.args.get('search') %}
+            <a href="{{ url_for('admin_adopters') }}" class="btn btn-outline-secondary rounded-0 px-3">CLEAR</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card p-4 border-0 shadow-sm" style="border-top: 4px solid var(--accent-gold) !important;">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr style="font-size: 0.7rem; color: #888;">
+                    <th>ADOPTER PROFILE</th>
+                    <th>EMAIL ADDRESS</th>
+                    <th>STATUS</th>
+                    <th>COMPANIONS</th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in adopters %}
+                <tr>
+                    <td>
+                        <div class="fw-bold" style="color: var(--primary-navy);">{{ user.full_name }}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">User ID: #{{ user.id }}</div>
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_verified %}
+                            <span class="badge bg-success rounded-0" style="font-size: 0.6rem;">VERIFIED</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark rounded-0" style="font-size: 0.6rem;">UNVERIFIED</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td>
+                        <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
+                            {% if user.applications %}
+                                {% set added_pet_ids = [] %}
+                                {% set unique_pets = [] %}
+                                
+                                {% for app in user.applications %}
+                                    {% for item in app.items %}
+                                        {% if item.pet.id not in added_pet_ids %}
+                                            {% set _ = added_pet_ids.append(item.pet.id) %}
+                                            {% set _ = unique_pets.append(item.pet) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+
+                                {% for pet in unique_pets[:3] %}
+                                    <a href="{{ url_for('admin_view_pet', pet_id=pet.id) }}"
+                                       class="badge border border-primary text-primary fw-bold bg-white shadow-sm text-decoration-none" 
+                                       style="font-size: 0.65rem;" title="View Pet Profile">
+                                        {{ pet.name }} &nearr;
+                                    </a>
+                                {% endfor %}
+                                
+                                {% if unique_pets|length > 3 %}
+                                    <span class="badge bg-secondary rounded-pill shadow-sm" style="font-size: 0.6rem; padding-top: 5px;">
+                                        +{{ unique_pets|length - 3 }} more
+                                    </span>
+                                {% endif %}
+                                
+                            {% else %}
+                                <span class="text-muted x-small italic">No applications</span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td class="text-end">
+                        <a href="{{ url_for('admin_view_adopter', user_id=user.id) }}" class="btn btn-sm btn-outline-secondary rounded-0 fw-bold" style="font-size: 0.65rem;">
+                            VIEW DOSSIER
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted small italic">No adopters found matching that criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

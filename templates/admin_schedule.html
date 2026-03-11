@@ -1,0 +1,253 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<head>
+
+   <link rel="stylesheet" href="static/style.css" />
+</head>
+
+<div class="container-fluid px-0 mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show rounded-0 border-0 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center">
+                        <strong>System Notification:</strong>&nbsp;{{ message }}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Logistics & Appointments</h2>
+    <span class="badge bg-navy px-3 py-2 shadow-sm">
+        {{ pending_applications|length + scheduled_apps|length }} Total Active Tasks
+    </span>
+</div>
+
+<div class="card p-4 mb-5 shadow-sm border-0">
+    <h5 class="fw-bold mb-3 border-bottom pb-2 text-uppercase small ls-1 text-muted">New Requests (Pending Approval)</h5>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead class="table-light">
+                <tr style="font-size: 0.65rem; color: #888;">
+                    <th>ADOPTER</th>
+                    <th>REQUESTED PETS</th>
+                    <th>STATUS </th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in pending_applications %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">
+                            {% if app.user_id %}
+                                <a href="{{ url_for('admin_view_adopter', user_id=app.user_id) }}" class="text-decoration-none text-primary">
+                                    {{ app.adopter_name }}
+                                </a>
+                            {% else %}
+                                <span style="color: var(--primary-navy);">{{ app.adopter_name }} <small class="text-muted fw-normal">(Account Deleted)</small></span>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">{{ app.email }}</small>
+                    </td>
+                    <td>
+                        {% for item in app.items %}
+                            <span class="badge rounded-0 border text-dark fw-normal bg-white" style="font-size: 0.65rem;">{{ item.pet.name }}</span>
+                        {% endfor %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary fw-bold rounded-0 me-2" style="font-size: 0.65rem;" data-bs-toggle="modal" data-bs-target="#viewAppModal{{ app.id }}">
+                                VIEW APPLICATION
+                            </button>
+                            <a href="{{ url_for('approve_application', app_id=app.id) }}" class="btn btn-sm btn-success rounded-0 px-3">APPROVE</a>
+                            <a href="{{ url_for('decline_application', app_id=app.id) }}" class="btn btn-sm btn-outline-danger rounded-0" onclick="return confirm('Decline this application?')">DECLINE</a>
+                        </div>
+                    </td>
+                </tr>
+
+                <div class="modal fade" id="viewAppModal{{ app.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content rounded-0 border-0 shadow-lg">
+                            <div class="modal-header border-0 bg-light">
+                                <h5 class="fw-bold mb-0 text-uppercase small ls-1">Application File #{{ app.id }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4 text-start">
+                                <div class="row g-3">
+                                    
+                                    <div class="col-12 mb-2">
+                                        <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">1. Personal Details</h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Name:</strong> {{ app.adopter_name }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Email:</strong> {{ app.email }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Phone:</strong> {{ app.phone }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Occupation:</strong> {{ app.occupation }}</p></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mb-2 mt-3">
+                                        <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">2. Household & Environment</h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-4"><p class="mb-1 small"><strong>Home Type:</strong> {{ app.q_home_type }}</p></div>
+                                            <div class="col-md-4"><p class="mb-1 small"><strong>Yard Access:</strong> {{ app.q_yard_access }}</p></div>
+                                            <div class="col-md-4"><p class="mb-1 small"><strong>Household Size:</strong> {{ app.household_size }}</p></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mb-2 mt-3">
+                                        <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">3. Capability & History</h6>
+                                        <div class="row g-2">
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Hours Left Alone:</strong> {{ app.q_hours_alone }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Other Pets:</strong> {{ app.other_pets }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Financial Readiness:</strong> {{ app.financial_readiness }}</p></div>
+                                            <div class="col-md-6"><p class="mb-1 small"><strong>Ever Surrendered a Pet:</strong> {{ app.surrendered_pet }}</p></div>
+                                            <div class="col-12 mt-2">
+                                                <p class="mb-1 small border p-3 bg-light text-muted">
+                                                    <strong class="text-dark">Past Pet Experience:</strong><br> 
+                                                    {{ app.q_pet_experience }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">4. Attached Documents</h6>
+                                        <div class="d-flex justify-content-start gap-3 flex-wrap mt-3">
+                                            {% if app.id_proof %}
+                                                <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.id_proof) }}')" class="btn btn-sm btn-outline-dark shadow-sm rounded-0 fw-bold">
+                                                    VIEW GOV ID
+                                                </button>
+                                            {% endif %}
+
+                                            {% if app.home_picture %}
+                                                <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.home_picture) }}')" class="btn btn-sm btn-outline-dark shadow-sm rounded-0 fw-bold">
+                                                    VIEW HOME PHOTO
+                                                </button>
+                                            {% endif %}
+                                            
+                                            {% if not app.id_proof and not app.home_picture %}
+                                                <span class="text-muted small italic">No file attachments provided.</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 bg-light justify-content-between">
+                                <button type="button" class="btn btn-sm btn-light rounded-0 fw-bold border" data-bs-dismiss="modal">CLOSE</button>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('decline_application', app_id=app.id) }}" class="btn btn-sm btn-outline-danger rounded-0 fw-bold" onclick="return confirm('Decline this application?')">DECLINE</a>
+                                    <a href="{{ url_for('approve_application', app_id=app.id) }}" class="btn btn-sm btn-success rounded-0 fw-bold">APPROVE</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <tr><td colspan="4" class="text-center py-4 text-muted small italic">No new applications to review.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card p-4 border-0 shadow-sm" style="border-top: 4px solid var(--accent-gold) !important;">
+    <h5 class="fw-bold mb-4">🗓️ Sanctuary Daily Schedule</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="bg-light">
+                <tr style="font-size: 0.65rem; color: #888;">
+                    <th>DATE & TIME</th>
+                    <th>ADOPTER</th>
+                    <th>ACTIVITY</th>
+                    <th>COMPANIONS</th>
+                    <th class="text-end">LOGISTICS ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in scheduled_apps %}
+                <tr style="border-left: 3px solid {% if 'Return' in app.status %}#dc3545{% else %}#198754{% endif %};">
+                    <td class="small fw-bold">
+                        {% if 'Return' in app.status %}
+                            {{ app.return_date.strftime('%b %d | %I:%M %p') if app.return_date else 'Awaiting Date' }}
+                        {% else %}
+                            {{ app.pickup_date.strftime('%b %d | %I:%M %p') if app.pickup_date else 'Date Pending' }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="fw-bold" style="font-size: 0.9rem;">
+                            {% if app.user_id %}
+                                <a href="{{ url_for('admin_view_adopter', user_id=app.user_id) }}" class="text-decoration-none text-primary">
+                                    {{ app.adopter_name }}
+                                </a>
+                            {% else %}
+                                <span style="color: var(--primary-navy);">{{ app.adopter_name }} <small class="text-muted fw-normal">(Account Deleted)</small></span>
+                            {% endif %}
+                        </div>
+                        <div class="text-muted" style="font-size: 0.7rem;">ID: #APP-{{ app.id }}</div>
+                    </td>
+                    <td>
+                        <span class="badge {% if 'Return' in app.status %}bg-danger{% else %}bg-success{% endif %} rounded-0" style="font-size: 0.6rem; letter-spacing: 1px;">
+                            {{ 'INTAKE / RETURN' if 'Return' in app.status else 'OUTGOING / CLAIM' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for item in app.items %}
+                                <span class="badge border text-dark fw-normal bg-white" style="font-size: 0.65rem;">
+                                    {{ item.pet.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        {% if app.status == 'Return Pending' %}
+                            <a href="{{ url_for('confirm_return', app_id=app.id) }}" class="btn btn-sm btn-danger py-1 px-3 fw-bold" style="font-size: 0.6rem;">CONFIRM INTAKE</a>
+                        
+                        {% elif app.status == 'Return Requested' %}
+                            <span class="text-muted x-small italic">Awaiting Adopter Schedule</span>
+                            
+                        {% elif app.status == 'Approved' and app.pickup_date %}
+                            <a href="{{ url_for('mark_claimed', app_id=app.id) }}" class="btn btn-sm btn-navy py-1 px-3 fw-bold" style="font-size: 0.6rem;">MARK AS CLAIMED</a>
+                            
+                        {% else %}
+                            <span class="text-muted x-small italic">Awaiting Adopter Action</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center py-5 text-muted small italic">No physical appointments scheduled for this period.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="imageViewerModal" tabindex="-1" style="z-index: 1060;" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 bg-transparent">
+            <div class="modal-header border-0 d-flex justify-content-center pb-0">
+                <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow" data-bs-dismiss="modal">
+                    &times; EXIT IMAGE
+                </button>
+            </div>
+            <div class="modal-body text-center pt-3">
+                <img id="fullSizeImage" src="" class="img-fluid rounded shadow-lg" style="max-height: 80vh; border: 4px solid white;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openImageViewer(imageSrc) {
+    document.getElementById('fullSizeImage').src = imageSrc;
+    var imageModal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
+    imageModal.show();
+}
+</script>
+{% endblock %}

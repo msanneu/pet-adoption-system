@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Adoptions | PetAdopt Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary-navy: #1a2a3a; 
+            --accent-gold: #c5a059; 
+            --bg-dashboard: #fdfdfb; 
+            --border-light: rgba(0,0,0,0.06);
+        }
+
+        .bg-navy { 
+            background-color: var(--primary-navy) !important; 
+            color: white; 
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dashboard); color: #333; }
+        h2, h5 { font-family: 'Playfair Display', serif; }
+
+        /* Navigation */
+        .nav-adopter { background: #fff; border-bottom: 1px solid var(--border-light); padding: 18px 0; }
+        .portal-logo { letter-spacing: 2px; font-weight: 700; color: var(--primary-navy); text-decoration: none; }
+
+        /* Adoption Cards */
+        .card-request { 
+            border: 1px solid var(--border-light); 
+            border-radius: 0; 
+            background: #fff; 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-left: 5px solid var(--primary-navy); 
+        }
+        
+        .card-request:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.06) !important;
+        }
+
+        /* Dynamic Status Accents */
+        .status-approved { border-left-color: #198754 !important; }
+        .status-pending { border-left-color: #ffc107 !important; }
+        .status-returned { border-left-color: #6c757d !important; }
+        .status-declined { border-left-color: #dc3545 !important; }
+
+        /* Typography & Badges */
+        .status-badge { 
+            font-size: 0.65rem; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+            padding: 6px 14px; 
+            border-radius: 0; 
+            font-weight: 600;
+        }
+        
+        .pet-img-sm { 
+            width: 90px; height: 90px; 
+            object-fit: cover; 
+            border: 1px solid var(--border-light);
+            padding: 4px;
+            background: #fff;
+        }
+
+        .text-id { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); font-weight: 600; }
+
+        /* Sidebar Styling */
+        .stats-card { background: var(--primary-navy); color: white; border: none; border-radius: 0; }
+        .protocol-box { background: #f0e6d2; border: none; border-radius: 0; }
+
+        /* Buttons */
+        .btn-navy { background: var(--primary-navy); color: white; border-radius: 0; font-weight: 600; }
+        .btn-navy:hover { background: #2c3e50; color: white; }
+        .btn-return {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 0;
+            padding: 8px 16px;
+        }
+
+        .italic { font-style: italic; }
+    </style>
+</head>
+<body>
+
+<nav class="nav-adopter mb-5 sticky-top shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="/" class="portal-logo">PETADOPT <span style="color: var(--accent-gold);">PORTAL</span></a>
+        <div class="d-flex gap-4 align-items-center">
+            <span class="small text-muted d-none d-md-block">Logged in as <strong class="text-dark">{{ user.full_name }}</strong></span>
+            <a href="/profile" class="btn btn-sm btn-outline-dark rounded-0 px-3 fw-bold" style="font-size: 0.7rem;">SETTINGS</a>
+            <a href="/logout" class="btn btn-sm btn-outline-danger rounded-0 px-3 fw-bold" style="font-size: 0.7rem;">LOGOUT</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-4">Your Adoption Journey</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} rounded-0 mb-4 small shadow-sm border-0">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if requests %}
+                {% for app in requests %}
+                <div class="card card-request p-4 shadow-sm mb-4 
+                    {% if app.status == 'Approved' %}status-approved
+                    {% elif app.status == 'Pending' %}status-pending
+                    {% elif app.status == 'Declined' %}status-declined{% endif %}">
+                    
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="fw-bold mb-1">Application Record #{{ app.id }}</h5>
+                            <p class="text-id mb-2" style="font-size: 0.7rem;">SUBMITTED: {{ app.application_date.strftime('%B %d, %Y') }}</p>
+                            
+                            <div class="d-flex gap-2 flex-wrap mt-3">
+                                {% for item in app.items %}
+                                <div class="d-flex align-items-center border p-2 bg-white shadow-sm">
+                                    <img src="{{ url_for('static', filename='uploads/' + item.pet.photo) }}" 
+                                         style="width:40px; height:40px; object-fit:cover;" class="me-2">
+                                    <span class="small fw-bold">{{ item.pet.name }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mt-3 border-top pt-3">
+                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-0 fw-bold" style="font-size: 0.65rem;" data-bs-toggle="modal" data-bs-target="#viewResponseModal{{ app.id }}">
+                                    VIEW SUBMITTED RESPONSES
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <span class="badge mb-3 d-inline-block status-badge 
+                                {% if app.status == 'Claimed' %}bg-success
+                                {% elif app.status == 'Approved' %}bg-navy
+                                {% elif app.status == 'Pending' %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %}">
+                                {{ app.status }}
+                            </span>
+                            
+                            {% if app.status == 'Approved' %}
+                                <div class="p-3 border bg-light shadow-sm">
+                                    <form action="{{ url_for('schedule_pickup', app_id=app.id) }}" method="POST">
+                                        <label class="form-label-sm text-start d-block fw-bold mb-1" style="font-size: 0.6rem;">CLAIMING DATE & TIME</label>
+                                        <input type="datetime-local" name="pickup_date" 
+                                               class="form-control form-control-sm mb-2 rounded-0" 
+                                               value="{{ app.pickup_date.strftime('%Y-%m-%dT%H:%M') if app.pickup_date }}" required>
+                                        <button class="btn btn-sm btn-dark rounded-0 w-100 fw-bold" style="font-size: 0.65rem;">
+                                            {% if app.pickup_date %}UPDATE SCHEDULE{% else %}CONFIRM PICKUP{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+
+                            {% elif app.status == 'Claimed' %}
+                                <div class="p-3 border bg-white shadow-sm" style="border-top: 3px solid #dc3545 !important;">
+                                    {% if app.can_return %}
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <p class="text-danger fw-bold mb-0" style="font-size: 0.7rem;">RETURN WINDOW ACTIVE</p>
+                                            <span class="badge bg-danger rounded-pill" style="font-size: 0.6rem;">
+                                                {{ app.days_left }} DAYS LEFT
+                                            </span>
+                                        </div>
+                                        <p class="text-muted mb-3" style="font-size: 0.65rem;">
+                                            Final date to initiate return: <span class="text-dark fw-bold">{{ app.return_deadline.strftime('%b %d, %Y') }}</span>
+                                        </p>
+                                        <a href="{{ url_for('process_return', app_id=app.id) }}" 
+                                           class="btn btn-sm btn-outline-danger btn-return w-100"
+                                           onclick="return confirm('Initiating a return will notify staff to prepare kennel space. Proceed?')">
+                                            INITIATE RETURN
+                                        </a>
+                                    {% else %}
+                                        <div class="text-center py-2">
+                                            <svg width="20" height="20" fill="currentColor" class="text-success mb-1" viewBox="0 0 16 16">
+                                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                                            </svg>
+                                            <p class="text-success small fw-bold mb-0">ADOPTION FINALIZED</p>
+                                            <p class="text-muted x-small italic">Trial period completed successfully.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                            {% elif app.status == 'Return Requested' %}
+                                <div class="p-3 border bg-white shadow-sm" style="border-top: 3px solid #dc3545 !important;">
+                                    <p class="text-danger fw-bold mb-2" style="font-size: 0.7rem;">SCHEDULE DROP-OFF</p>
+                                    <p class="text-muted mb-3" style="font-size: 0.65rem;">Please select a date and time to return the companion to the sanctuary.</p>
+                                    <form action="{{ url_for('schedule_return', app_id=app.id) }}" method="POST">
+                                        <input type="datetime-local" name="return_date" class="form-control form-control-sm mb-2 rounded-0" required>
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-0 w-100 fw-bold" style="font-size: 0.65rem;">
+                                            CONFIRM RETURN SCHEDULE
+                                        </button>
+                                    </form>
+                                </div>
+
+                            {% elif app.status == 'Return Pending' %}
+                                <div class="p-3 border bg-white shadow-sm" style="border-top: 3px solid #dc3545 !important;">
+                                    <p class="text-danger fw-bold mb-1" style="font-size: 0.7rem;">RETURN APPOINTMENT SET</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.65rem;">
+                                        Drop-off: <strong class="text-dark">{{ app.return_date.strftime('%B %d, %Y at %I:%M %p') }}</strong>
+                                    </p>
+                                    <p class="text-muted mt-2 mb-0 italic" style="font-size: 0.6rem;">Please bring all belongings provided during adoption.</p>
+                                </div>
+                                
+                            {% elif app.status == 'Returned' %}
+                                <div class="text-center py-3 border bg-light shadow-sm">
+                                    <p class="text-muted small fw-bold mb-0">COMPANION RETURNED</p>
+                                    <p class="text-muted x-small italic mb-0">Intake confirmed by staff.</p>
+                                </div>
+
+                            {% elif app.status == 'Return Requested' %}
+                                <div class="p-3 border bg-white shadow-sm" style="border-top: 3px solid #dc3545 !important;">
+                                    <p class="text-danger fw-bold mb-2" style="font-size: 0.7rem;">SCHEDULE DROP-OFF</p>
+                                    <p class="text-muted mb-3" style="font-size: 0.65rem;">Please select a date and time to return the companion to the sanctuary.</p>
+                                    <form action="{{ url_for('schedule_return', app_id=app.id) }}" method="POST">
+                                        <input type="datetime-local" name="return_date" class="form-control form-control-sm mb-2 rounded-0" required>
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-0 w-100 fw-bold" style="font-size: 0.65rem;">
+                                            CONFIRM RETURN SCHEDULE
+                                        </button>
+                                    </form>
+                                </div>
+
+                            {% elif app.status == 'Return Pending' %}
+                                <div class="p-3 border bg-white shadow-sm" style="border-top: 3px solid #dc3545 !important;">
+                                    <p class="text-danger fw-bold mb-1" style="font-size: 0.7rem;">RETURN APPOINTMENT SET</p>
+                                    <p class="text-muted mb-0" style="font-size: 0.65rem;">
+                                        Drop-off: <strong class="text-dark">{{ app.return_date.strftime('%B %d, %Y at %I:%M %p') }}</strong>
+                                    </p>
+                                    <p class="text-muted mt-2 mb-0 italic" style="font-size: 0.6rem;">Please bring all belongings provided during adoption.</p>
+                                </div>
+                                
+                            {% elif app.status == 'Returned' %}
+                                <div class="text-center py-3 border bg-light shadow-sm">
+                                    <p class="text-muted small fw-bold mb-0">COMPANION RETURNED</p>
+                                    <p class="text-muted x-small italic mb-0">Intake confirmed by staff.</p>
+                                </div>
+
+                            {% else %}
+                                <div class="p-2">
+                                    <p class="small text-muted mb-0 italic">
+                                        {% if app.status == 'Pending' %}
+                                            Under review by sanctuary staff.
+                                        {% elif app.status == 'Declined' %}
+                                            This application was not successful.
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5 border bg-white shadow-sm">
+                    <p class="text-muted mb-4">You haven't initiated any adoption applications yet.</p>
+                    <a href="/#pets" class="btn btn-classic px-5 py-3" style="text-decoration: none;">BROWSE GALLERY</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="d-grid gap-2 mb-4">
+                <a href="/" class="btn btn-classic shadow-sm" style="background: var(--accent-gold); border: none; color: white; text-align: center; text-decoration: none; padding: 12px; font-weight: bold;">
+                    RETURN TO GALLERY
+                </a>
+                <p class="x-small text-center text-muted mt-2">Ready to find a companion? Browse our latest rescues.</p>
+            </div>  
+
+            <div class="card stats-card p-4 shadow-sm mb-4">
+                <h6 class="text-uppercase small ls-2 mb-3" style="color: var(--accent-gold);">Guardian Insights</h6>
+                <p class="small opacity-75 mb-4">Track your formal applications and manage the 30-day transition window for your new companions.</p>
+                
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small opacity-75">Applications</span>
+                    <span class="fw-bold fs-5">{{ requests|length }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="small opacity-75">Active Adoptions</span>
+                    <span class="fw-bold fs-5">{{ requests|selectattr('status', 'equalto', 'Approved')|list|length }}</span>
+                </div>
+                <hr class="opacity-25">
+                <p class="x-small italic text-center mb-0" style="color: var(--accent-gold);">"A commitment for a lifetime."</p>
+            </div>
+
+            <div class="card protocol-box p-4 shadow-sm">
+                <h6 class="fw-bold text-uppercase small mb-3" style="color: var(--primary-navy); letter-spacing: 1px;">Sanctuary Protocol</h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="x-small text-muted mb-2">• <strong>Verification:</strong> Staff reviews IDs within 72 hours.</li>
+                    <li class="x-small text-muted mb-2">• <strong>Return Window:</strong> You have 30 days to return a companion if the home match is unsuccessful.</li>
+                    <li class="x-small text-muted">• <strong>Physical Visit:</strong> Only visit the sanctuary after your digital status shows "Approved".</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if requests %}
+    {% for app in requests %}
+    <div class="modal fade" id="viewResponseModal{{ app.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-0 border-0 shadow-lg">
+                <div class="modal-header border-0 bg-light">
+                    <h5 class="fw-bold mb-0 text-uppercase small ls-1">Application File #{{ app.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <div class="row g-3">
+                        
+                        <div class="col-12 mb-2">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">1. Personal Details</h6>
+                            <div class="row g-2">
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Name:</strong> {{ app.adopter_name }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Email:</strong> {{ app.email }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Phone:</strong> {{ app.phone }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Occupation:</strong> {{ app.occupation }}</p></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mb-2 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">2. Household & Environment</h6>
+                            <div class="row g-2">
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Home Type:</strong> {{ app.q_home_type }}</p></div>
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Yard Access:</strong> {{ app.q_yard_access }}</p></div>
+                                <div class="col-md-4"><p class="mb-1 small"><strong>Household Size:</strong> {{ app.household_size }}</p></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mb-2 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">3. Capability & History</h6>
+                            <div class="row g-2">
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Hours Left Alone:</strong> {{ app.q_hours_alone }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Other Pets:</strong> {{ app.other_pets }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Financial Readiness:</strong> {{ app.financial_readiness }}</p></div>
+                                <div class="col-md-6"><p class="mb-1 small"><strong>Ever Surrendered a Pet:</strong> {{ app.surrendered_pet }}</p></div>
+                                <div class="col-12 mt-2">
+                                    <p class="mb-1 small border p-3 bg-light text-muted">
+                                        <strong class="text-dark">Past Pet Experience:</strong><br> 
+                                        {{ app.q_pet_experience }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <h6 class="small fw-bold text-uppercase border-bottom pb-2" style="color: var(--primary-navy); letter-spacing: 1px;">4. Attached Documents</h6>
+                            <div class="d-flex justify-content-start gap-3 flex-wrap mt-3">
+                                {% if app.id_proof %}
+                                    <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.id_proof) }}')" class="btn btn-sm btn-gold-outline shadow-sm" style="border: 1px solid #c5a059; color: #c5a059; background: transparent; padding: 8px 16px; font-weight: 600;">
+                                        View Government ID
+                                    </button>
+                                {% endif %}
+                                
+                                {% if app.home_picture %}
+                                    <button type="button" onclick="openImageViewer('{{ url_for('static', filename='uploads/' + app.home_picture) }}')" class="btn btn-sm btn-gold-outline shadow-sm" style="border: 1px solid #c5a059; color: #c5a059; background: transparent; padding: 8px 16px; font-weight: 600;">
+                                        View Home Picture
+                                    </button>
+                                {% endif %}
+                                
+                                {% if not app.id_proof and not app.home_picture %}
+                                    <span class="text-muted small italic">No file attachments provided.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<div class="modal fade" id="imageViewerModal" tabindex="-1" style="z-index: 1060;" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 bg-transparent">
+            <div class="modal-header border-0 d-flex justify-content-center pb-0">
+                <button type="button" class="btn btn-light rounded-pill px-4 py-2 fw-bold shadow" data-bs-dismiss="modal" style="letter-spacing: 1px; color: var(--primary-navy);">
+                    &times; EXIT IMAGE
+                </button>
+            </div>
+            <div class="modal-body text-center pt-3">
+                <img id="fullSizeImage" src="" class="img-fluid rounded shadow-lg" style="max-height: 80vh; border: 4px solid white;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function openImageViewer(imageSrc) {
+    document.getElementById('fullSizeImage').src = imageSrc;
+    var imageModal = new bootstrap.Modal(document.getElementById('imageViewerModal'));
+    imageModal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+    
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const minDateTime = now.toISOString().slice(0, 16);
+    
+    dateInputs.forEach(input => {
+        input.setAttribute('min', minDateTime);
+        
+        input.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const day = selectedDate.getDay(); 
+            const hours = selectedDate.getHours();
+            
+            if (day === 0) {
+                alert("The Sanctuary is closed on Sundays. Please select a Monday to Saturday.");
+                this.value = "";
+                return;
+            }
+            
+            if (hours < 9 || hours >= 16) {
+                alert("Please schedule appointments between our operating hours: 9:00 AM to 4:00 PM.");
+                this.value = "";
+                return;
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

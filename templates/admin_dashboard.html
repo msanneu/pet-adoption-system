@@ -1,0 +1,71 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+<h2 class="fw-bold mb-4">Internal Dashboard</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--primary-navy), #2c3e50); color: white;">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h6 class="text-uppercase small ls-2 mb-1" style="color: var(--accent-gold);">Community Impact</h6>
+                    <h2 class="display-5 fw-bold mb-0">{{ total_adoptions }} Total Successful Adoptions</h2>
+                    <p class="small opacity-75 mb-0">Total lives changed since sanctuary establishment in October 2024.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="{{ url_for('monthly_report') }}" class="btn btn-gold-outline px-4">VIEW FULL IMPACT REPORT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-4 mb-5">
+    <div class="col-md-8">
+        <div class="card p-4 border-0 shadow-sm" style="background: #fff; border-left: 5px solid var(--primary-navy) !important;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-uppercase ls-1 mb-0">Sanctuary Occupancy</h6>
+                <span class="small fw-bold">{{ current_occupancy }} / 50 KENNELS FILLED</span>
+            </div>
+            
+            <div class="progress rounded-0" style="height: 12px;">
+                <div class="progress-bar {% if occupancy_percent > 80 %}bg-danger{% else %}bg-success{% endif %}" 
+                     role="progressbar" 
+                     style="width: {{ occupancy_percent }}%" 
+                     aria-valuenow="{{ occupancy_percent }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100"></div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-2">
+                <small class="text-muted">{{ available_spots }} spots remaining</small>
+                <small class="fw-bold">{{ occupancy_percent|round|int }}% Capacity</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 border-0 shadow-sm text-center h-100" style="background: var(--primary-navy); color: white;">
+            <h6 class="text-uppercase small ls-2 mb-2" style="color: var(--accent-gold);">Efficiency Rating</h6>
+            <h2 class="display-6 fw-bold mb-0">{{ avg_processing_time }}h</h2>
+            <p class="small opacity-75 mb-0">Avg. Response Time</p>
+            <hr class="opacity-10 my-3">
+            <a href="{{ url_for('admin_schedule') }}" class="btn btn-sm btn-gold-outline w-100">Review Pending</a>
+        </div>
+    </div>
+
+<div class="col-md-4">
+    <div class="card p-4 border-0 shadow-sm text-center h-100" style="background: #fff; border-top: 4px solid var(--accent-gold) !important;">
+        <h6 class="text-uppercase small ls-2 mb-2 text-muted">Reserved Pets</h6>
+        <h2 class="display-6 fw-bold mb-0 text-dark">{{ reserved_pets }}</h2>
+        <p class="small opacity-75 mb-0">Awaiting Pickup</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-12">
+        <div class="card p-4 border-0 shadow-sm">
+            <h5 class="fw-bold mb-0">Morning Briefing</h5>
+            <p class="text-muted small">You have <strong>{{ pending_applications|length }}</strong> new applications awaiting vetting today.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

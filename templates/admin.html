@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Portal | PetAdopt</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        :root {
+
+            --primary-navy: #1a2a3a;
+
+            --accent-gold: #c5a059;
+
+            --bg-dashboard: #fdfdfb;
+
+            --text-main: #333;
+
+            --border-color: #e0e0e0;
+
+        }
+
+
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dashboard); color: var(--text-main); line-height: 1.7; }
+
+        h1, h2, h3, h4, h5, .brand-logo { font-family: 'Playfair Display', serif; }
+
+
+
+        /* --- NEW AESTHETIC LOGIN DESIGN --- */
+
+        .login-wrapper {
+
+            height: 100vh;
+
+            display: flex;
+
+            background-color: #fff;
+
+        }
+
+
+
+        .login-visual {
+
+            flex: 1;
+
+            background: linear-gradient(rgba(26, 42, 58, 0.8), rgba(26, 42, 58, 0.8)),
+
+                        url('https://images.unsplash.com/photo-1581888227599-779811939961?auto=format&fit=crop&w=1000&q=80');
+
+            background-size: cover;
+
+            background-position: center;
+
+            display: none;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            color: white;
+
+            padding: 40px;
+
+            text-align: center;
+
+        }
+
+
+
+        @media (min-width: 992px) { .login-visual { display: flex; } }
+
+
+
+        .login-form-container {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 40px;
+
+            position: relative;
+
+        }
+
+
+
+        .login-card {
+
+            width: 100%;
+
+            max-width: 380px;
+
+            background: transparent;
+
+            border: none;
+
+        }
+
+
+
+        .exit-link {
+
+            position: absolute; top: 40px; right: 40px; color: var(--accent-gold);
+
+            text-decoration: none; font-size: 0.75rem; text-transform: uppercase;
+
+            letter-spacing: 2px; font-weight: 600; transition: 0.3s;
+
+        }
+
+        .exit-link:hover { color: var(--primary-navy); }
+
+
+
+        /* --- DASHBOARD UI COMPONENTS --- */
+
+        .card { border-radius: 0; border: 1px solid var(--border-color); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+
+        .table thead { background: var(--primary-navy); color: #fff; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        .form-control, .form-select { border-radius: 0; border: 1px solid #ddd; font-size: 0.9rem; padding: 12px; }
+
+        .form-control:focus, .form-select:focus { border-color: var(--accent-gold); box-shadow: none; }
+
+        .form-label-sm { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--accent-gold); letter-spacing: 1px; display: block; margin-bottom: 5px; }
+
+       
+
+        .btn-navy { background: var(--primary-navy); color: white; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; border: none; }
+
+        .btn-navy:hover { background: #2c3e50; }
+
+       
+
+        .btn-gold-outline { border: 1px solid var(--accent-gold); color: var(--accent-gold); border-radius: 0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+
+        .btn-gold-outline:hover { background: var(--accent-gold); color: white; }
+
+
+
+        .sticky-form { top: 100px; }
+
+        .pet-thumb { width: 45px; height: 45px; object-fit: cover; border: 1px solid var(--border-color); }
+
+        .modal-content { border-radius: 0; border: none; }
+
+       
+
+        /* Fixed Scrolling Offset Fix */
+
+        html { scroll-behavior: smooth; }
+
+        [id] { scroll-margin-top: 120px; }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+{% if login_mode %}
+
+<div class="login-wrapper">
+
+    <div class="login-visual">
+
+        <h1 class="display-4 fw-bold mb-3">Staff Portal</h1>
+
+        <div style="width: 50px; height: 2px; background: var(--accent-gold); margin-bottom: 20px;"></div>
+
+        <p class="opacity-75 small text-uppercase ls-2">Professional Animal Welfare <br> & Pet Management</p>
+
+    </div>
+
+
+
+    <div class="login-form-container">
+
+        <a href="{{ url_for('index') }}" class="exit-link">← Public Site</a>
+
+       
+
+        <div class="login-card">
+
+            <div class="text-center mb-5">
+
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--accent-gold)" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+
+                    <path d="M8.5 5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm7 0c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm-11 5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm15 0c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm-7.5 2c-3.04 0-5.5 2.46-5.5 5.5s2.46 5.5 5.5 5.5 5.5-2.46 5.5-5.5-2.46-5.5-5.5-5.5z"/>
+
+                </svg>
+
+                <h2 class="brand-logo h3 mb-1">Welcome Back</h2>
+
+                <p class="text-muted small">Enter your credentials to manage sanctuary pets.</p>
+
+            </div>
+
+
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="alert alert-warning rounded-0 border-0 py-2 mb-4" style="font-size: 0.75rem; background: #fff8eb;">{{ message }}</div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label-sm">Authorized Username</label>
+
+                    <input type="text" name="username" class="form-control" placeholder="Identity" required>
+
+                </div>
+
+                <div class="mb-5">
+
+                    <label class="form-label-sm">Security Password</label>
+
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+
+                </div>
+
+                <button type="submit" class="btn btn-navy w-100 py-3">Authenticate</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+{% else %}
+
+<div class="container mt-5">
+
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+      {% if messages %}
+
+        {% for category, message in messages %}
+
+          <div class="alert alert-{{ category }} rounded-0 small mb-4">{{ message }}</div>
+
+        {% endfor %}
+
+      {% endif %}
+
+    {% endwith %}
+
+
+
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
+
+        <div>
+
+            <h2 class="fw-bold mb-0">Internal Dashboard</h2>
+
+            <div class="text-muted small text-uppercase ls-1" style="font-size: 0.7rem;">Pet Management</div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-dark rounded-0 px-3">View Site</a>
+
+            <a href="/admin/admins" class="btn btn-sm btn-outline-dark rounded-0 px-3">Admins</a>
+
+            <a href="/admin/logout" class="btn btn-sm btn-navy px-3">Logout</a>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-8">
+            <div class="card p-4 border-0 shadow-sm" style="background: #fff; border-left: 5px solid var(--primary-navy) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-uppercase ls-1 mb-0">Sanctuary Occupancy</h6>
+                    <span class="small fw-bold">{{ current_occupancy }} / 50 KENNELS FILLED</span>
+                </div>
+                
+                <div class="progress rounded-0" style="height: 12px;">
+                    <div class="progress-bar {% if occupancy_percent > 80 %}bg-danger{% else %}bg-success{% endif %}" 
+                         role="progressbar" 
+                         style="width: {{ occupancy_percent }}%" 
+                         aria-valuenow="{{ occupancy_percent }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100"></div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-2">
+                    <small class="text-muted">{{ available_spots }} spots remaining</small>
+                    <small class="fw-bold">{{ occupancy_percent|round|int }}% Capacity</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 border-0 shadow-sm text-center h-100" style="background: var(--primary-navy); color: white;">
+                <h6 class="text-uppercase small ls-2 mb-2" style="color: var(--accent-gold);">Staff Reminder</h6>
+                <p class="small mb-0 opacity-75">Verify all Government IDs and update medical records before the scheduled pickup time.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card p-4 sticky-top sticky-form">
+
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Register Pet</h5>
+
+                <form action="/admin/add_pet" method="POST" enctype="multipart/form-data">
+
+                    <label class="form-label-sm">Pet Name</label>
+
+                    <input type="text" name="name" class="form-control mb-2" required>
+
+                    <label class="form-label-sm">Breed</label>
+
+                    <input type="text" name="breed" class="form-control mb-2" required>
+
+                   
+
+                    <div class="row g-2 mb-2">
+
+                        <div class="col-6"><label class="form-label-sm">Age</label>
+
+                            <select name="age_category" class="form-select form-select-sm">
+
+                                <option value="Puppy">Puppy</option><option value="Young">Young</option>
+
+                                <option value="Adult" selected>Adult</option><option value="Senior">Senior</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-6"><label class="form-label-sm">Gender</label>
+
+                            <select name="gender" class="form-select form-select-sm">
+
+                                <option value="Male">Male</option><option value="Female">Female</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="row g-2 mb-3">
+
+                        <div class="col-6"><label class="form-label-sm">Size</label>
+
+                            <select name="size" class="form-select form-select-sm">
+
+                                <option value="Small">Small</option><option value="Medium" selected>Medium</option><option value="Big">Big</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-6"><label class="form-label-sm">Energy</label>
+
+                            <select name="energy_level" class="form-select form-select-sm">
+
+                                <option value="Low Energy">Low</option><option value="Moderate" selected>Moderate</option><option value="High Energy">High</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="mb-3 border p-3 bg-light">
+
+                        <label class="form-label-sm mb-2 border-bottom">Medical Records</label>
+
+                        <select name="vac_status" class="form-select form-select-sm mb-2">
+
+                            <option value="Not Vaccinated">Not Vaccinated</option><option value="Partially Vaccinated">Partially Vaccinated</option><option value="Fully Vaccinated">Fully Vaccinated</option>
+
+                        </select>
+
+                        <input type="date" name="vac_date" class="form-control form-control-sm mb-2">
+
+                        <div class="row g-2">
+
+                            <div class="col-6"><select name="spayed_neutered" class="form-select form-select-sm"><option value="No">Fixed: No</option><option value="Yes">Fixed: Yes</option></select></div>
+
+                            <div class="col-6"><select name="special_needs" class="form-select form-select-sm"><option value="No">Special: No</option><option value="Yes">Special: Yes</option></select></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <textarea name="other_description" class="form-control mb-3" rows="2" placeholder="Clinical notes..."></textarea>
+
+                    <input type="file" name="photo" class="form-control mb-3" accept="image/*" required>
+
+                    <button class="btn btn-navy w-100">Register Pet</button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-lg-8">
+
+            <div class="card p-4 mb-5">
+
+                <h5 class="fw-bold mb-3">Inventory Overview</h5>
+
+                <div class="table-responsive">
+
+                    <table class="table align-middle">
+
+                        <thead><tr><th>Pet</th><th>Breed</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+
+                        <tbody>
+
+                            {% for pet in pets %}
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <img src="{{ url_for('static', filename='uploads/' + pet.photo) if pet.photo else '' }}" class="pet-thumb">
+
+                                        <div><span class="fw-bold">{{ pet.name }}</span><br>
+
+                                            {% if pet.special_needs == 'Yes' %}<span class="badge bg-warning text-dark rounded-0 px-2" style="font-size: 0.55rem;">SPECIAL NEEDS</span>{% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+                                <td class="small">{{ pet.breed }}</td>
+
+                                <td><span class="badge rounded-0 {% if pet.status == 'Available' %}bg-success{% else %}bg-secondary{% endif %}" style="font-size: 0.65rem;">{{ pet.status }}</span></td>
+
+                                <td class="text-end">
+
+                                    <div class="btn-group">
+
+                                        <button class="btn btn-sm btn-outline-dark rounded-0" data-bs-toggle="modal" data-bs-target="#editModal{{pet.id}}">Edit</button>
+
+                                        <a href="{{ url_for('delete_pet', pet_id=pet.id) }}" class="btn btn-sm btn-outline-danger rounded-0" onclick="return confirm('WARNING: Permanently remove this pet?')">Delete</a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+
+                            <div class="modal fade" id="editModal{{pet.id}}" tabindex="-1">
+
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                                    <div class="modal-content shadow-lg border-0">
+
+                                        <div class="modal-header border-0 pb-0"><h5 class="fw-bold">Modify Profile: {{ pet.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+
+                                        <form action="{{ url_for('edit_pet', pet_id=pet.id) }}" method="POST" enctype="multipart/form-data">
+
+                                            <div class="modal-body p-4 text-start">
+
+                                                <div class="row g-3">
+
+                                                    <div class="col-md-6"><label class="form-label-sm">Pet Name</label><input type="text" name="name" class="form-control" value="{{ pet.name }}" required></div>
+
+                                                    <div class="col-md-6"><label class="form-label-sm">Breed</label><input type="text" name="breed" class="form-control" value="{{ pet.breed }}" required></div>
+
+                                                </div>
+
+
+
+                                                <div class="mt-4 mb-3 border p-3 bg-light">
+
+                                                    <label class="form-label-sm mb-2 border-bottom">Medical Records</label>
+
+                                                    <div class="row g-2">
+
+                                                        <div class="col-md-6">
+
+                                                            <label class="form-label-sm opacity-50" style="font-size: 0.6rem;">Status</label>
+
+                                                            <select name="vac_status" class="form-select form-select-sm mb-2">
+
+                                                                <option value="Not Vaccinated" {% if pet.vac_status == 'Not Vaccinated' %}selected{% endif %}>Not Vaccinated</option>
+
+                                                                <option value="Partially Vaccinated" {% if pet.vac_status == 'Partially Vaccinated' %}selected{% endif %}>Partially Vaccinated</option>
+
+                                                                <option value="Fully Vaccinated" {% if pet.vac_status == 'Fully Vaccinated' %}selected{% endif %}>Fully Vaccinated</option>
+
+                                                            </select>
+
+                                                        </div>
+
+                                                        <div class="col-md-6">
+
+                                                            <label class="form-label-sm opacity-50" style="font-size: 0.6rem;">Last Date</label>
+
+                                                            <input type="date" name="vac_date" class="form-control form-control-sm mb-2" value="{{ pet.vac_date }}">
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="row g-2">
+
+                                                        <div class="col-6"><select name="spayed_neutered" class="form-select form-select-sm"><option value="No" {% if pet.spayed_neutered == 'No' %}selected{% endif %}>Fixed: No</option><option value="Yes" {% if pet.spayed_neutered == 'Yes' %}selected{% endif %}>Fixed: Yes</option></select></div>
+
+                                                        <div class="col-6"><select name="special_needs" class="form-select form-select-sm"><option value="No" {% if pet.special_needs == 'No' %}selected{% endif %}>Special: No</option><option value="Yes" {% if pet.special_needs == 'Yes' %}selected{% endif %}>Special: Yes</option></select></div>
+
+                                                    </div>
+
+                                                </div>
+
+
+
+                                                <div class="row g-3">
+
+                                                    <div class="col-md-4"><label class="form-label-sm">Age</label><select name="age_category" class="form-select"><option value="Puppy" {% if pet.age_category=='Puppy' %}selected{% endif %}>Puppy</option><option value="Young" {% if pet.age_category=='Young' %}selected{% endif %}>Young</option><option value="Adult" {% if pet.age_category=='Adult' %}selected{% endif %}>Adult</option><option value="Senior" {% if pet.age_category=='Senior' %}selected{% endif %}>Senior</option></select></div>
+
+                                                    <div class="col-md-4"><label class="form-label-sm">Gender</label><select name="gender" class="form-select"><option value="Male" {% if pet.gender=='Male' %}selected{% endif %}>Male</option><option value="Female" {% if pet.gender=='Female' %}selected{% endif %}>Female</option></select></div>
+
+                                                    <div class="col-md-4"><label class="form-label-sm">Adoption Status</label><select name="status" class="form-select"><option value="Available" {% if pet.status=='Available' %}selected{% endif %}>Available</option><option value="Adopted" {% if pet.status=='Adopted' %}selected{% endif %}>Adopted</option></select></div>
+
+                                                </div>
+
+                                                <div class="mt-3"><label class="form-label-sm">Notes</label><textarea name="other_description" class="form-control" rows="3">{{ pet.other_description }}</textarea></div>
+
+                                                <div class="mt-3"><label class="form-label-sm">Update Photo</label><input type="file" name="photo" class="form-control" accept="image/*"></div>
+
+                                            </div>
+
+                                            <div class="modal-footer border-0 pt-0"><button type="button" class="btn btn-light rounded-0 text-uppercase small fw-bold" data-bs-dismiss="modal">Discard</button><button type="submit" class="btn btn-navy px-4">Commit Changes</button></div>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+                        <div class="card p-4 mb-5">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Pending Applications</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Adopter</th>
+                                <th>Requested Pets</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in pending_applications %}
+                            <tr>
+                                <td>
+                                    <strong>{{ app.adopter_name }}</strong><br>
+                                    <small class="text-muted">{{ app.email }}</small>
+                                </td>
+                                <td>
+                                    {% for item in app.items %}
+                                        <span class="badge rounded-0 border text-dark fw-normal" style="font-size: 0.65rem;">
+                                            {{ item.pet.name }}
+                                        </span>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-end">
+                            <tr style="border-left: 3px solid {% if app.status == 'Return Requested' %}#dc3545{% else %}#198754{% endif %};">
+    <td class="small fw-bold">
+    {% if app.status == 'Return Requested' %}
+        {{ app.return_date.strftime('%b %d | %I:%M %p') if app.return_date else 'Date Pending' }}
+    {% else %}
+        {{ app.pickup_date.strftime('%b %d | %I:%M %p') if app.pickup_date else 'Date Pending' }}
+    {% endif %}
+</td>
+    <td>
+        <div class="fw-bold" style="font-size: 0.9rem;">{{ app.adopter_name }}</div>
+        <div class="text-muted" style="font-size: 0.7rem;">ID: #APP-{{ app.id }}</div>
+    </td>
+    <td>
+        {% if app.status == 'Return Requested' %}
+            <span class="badge bg-danger rounded-0" style="font-size: 0.6rem; letter-spacing: 1px;">INTAKE / RETURN</span>
+        {% else %}
+            <span class="badge bg-success rounded-0" style="font-size: 0.6rem; letter-spacing: 1px;">OUTGOING / CLAIM</span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="d-flex gap-1">
+            {% for item in app.items %}
+                <span class="badge border text-dark fw-normal bg-white" style="font-size: 0.65rem;">{{ item.pet.name }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="text-end">
+        {% if app.status == 'Return Requested' %}
+            <a href="{{ url_for('confirm_return', app_id=app.id) }}" 
+               class="btn btn-sm btn-danger py-1 px-3 rounded-0 fw-bold" 
+               style="font-size: 0.6rem;"
+               onclick="return confirm('Confirm intake? This pet will be returned to the Available gallery.')">
+               CONFIRM INTAKE
+            </a>
+        {% elif app.status == 'Approved' and app.pickup_date %}
+            <a href="{{ url_for('mark_claimed', app_id=app.id) }}" 
+               class="btn btn-sm btn-navy py-1 px-3 rounded-0 fw-bold" 
+               style="font-size: 0.6rem;"
+               onclick="return confirm('Confirm that the pets have been physically claimed by the adopter?')">
+               MARK AS CLAIMED
+            </a>
+        {% elif app.status == 'Claimed' %}
+            <span class="text-success small fw-bold"><svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg> COMPLETED</span>
+        {% elif app.status == 'Returned' %}
+            <span class="text-muted small fw-bold">INTAKE COMPLETE</span>
+        {% endif %}
+    </td>
+</tr>
+                                <td><span class="badge bg-warning rounded-0" style="font-size: 0.65rem;">{{ app.status }}</span></td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-gold-outline" data-bs-toggle="modal" data-bs-target="#idView{{app.id}}">ID</button>
+                                        <a href="{{ url_for('approve_application', app_id=app.id) }}" class="btn btn-sm btn-success rounded-0">Approve</a>
+                                        <a href="{{ url_for('decline_application', app_id=app.id) }}" class="btn btn-sm btn-outline-danger rounded-0">Decline</a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <div class="modal fade" id="idView{{app.id}}" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0">
+                                        <div class="modal-header border-0 pb-0"><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                        <div class="modal-body text-center p-4">
+                                            <label class="form-label-sm mb-3">Government ID</label>
+                                            <img src="{{ url_for('static', filename='uploads/' + app.id_proof) }}" class="img-fluid border">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <tr><td colspan="4" class="text-center text-muted py-4 small">No pending applications found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card p-4 border-0 shadow-sm mb-5" style="background: #fff; border-top: 4px solid var(--accent-gold) !important;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">🗓️ Sanctuary Daily Schedule</h5>
+                    <span class="badge bg-light text-dark border">{{ scheduled_apps|length }} Upcoming Events</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr style="font-size: 0.65rem; color: #888;">
+                                <th>DATE & TIME</th>
+                                <th>ADOPTER</th>
+                                <th>ACTIVITY</th>
+                                <th>COMPANIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in scheduled_apps %}
+<tr style="border-left: 3px solid {% if app.status == 'Return Requested' %}#dc3545{% else %}#198754{% endif %};">
+    <td class="small fw-bold">
+        {{ app.return_date.strftime('%b %d | %I:%M %p') if app.return_date else app.pickup_date.strftime('%b %d | %I:%M %p') }}
+    </td>
+    <td>
+        <div class="fw-bold" style="font-size: 0.9rem;">{{ app.adopter_name }}</div>
+        <div class="text-muted" style="font-size: 0.7rem;">ID: #APP-{{ app.id }}</div>
+    </td>
+    <td>
+        {% if app.status == 'Return Requested' %}
+            <span class="badge bg-danger rounded-0" style="font-size: 0.6rem; letter-spacing: 1px;">INTAKE / RETURN</span>
+        {% else %}
+            <span class="badge bg-success rounded-0" style="font-size: 0.6rem; letter-spacing: 1px;">OUTGOING / CLAIM</span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="d-flex gap-1">
+            {% for item in app.items %}
+                <span class="badge border text-dark fw-normal bg-white" style="font-size: 0.65rem;">{{ item.pet.name }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="text-end">
+        {% if app.status == 'Return Requested' %}
+            <a href="{{ url_for('confirm_return', app_id=app.id) }}" 
+               class="btn btn-sm btn-danger py-1 px-3 rounded-0 fw-bold" 
+               style="font-size: 0.6rem;"
+               onclick="return confirm('Confirm intake? This pet will be returned to the Available gallery.')">
+               CONFIRM INTAKE
+            </a>
+        {% elif app.status == 'Approved' and app.pickup_date %}
+            <a href="{{ url_for('mark_claimed', app_id=app.id) }}" 
+               class="btn btn-sm btn-navy py-1 px-3 rounded-0 fw-bold" 
+               style="font-size: 0.6rem;"
+               onclick="return confirm('Confirm that the pets have been physically claimed by the adopter?')">
+               MARK AS CLAIMED
+            </a>
+        {% elif app.status == 'Claimed' %}
+            <span class="text-success small fw-bold"><svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg> COMPLETED</span>
+        {% elif app.status == 'Returned' %}
+             <span class="text-muted small fw-bold">INTAKE COMPLETE</span>
+        {% endif %}
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="5" class="text-center py-5 text-muted small italic">No appointments scheduled for the upcoming week.</td>
+</tr>
+{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card p-4">
+
+                <div class="row mt-5">
+    <div class="col-12">
+        <div class="card p-4 border-0 shadow-sm" style="border-top: 4px solid #6c757d !important;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0 text-muted text-uppercase ls-1">Archive: Satisfied Transactions</h5>
+                <span class="badge bg-secondary">{{ history_apps|length }} Records</span>
+            </div>
+
+            <div class="table-responsive">
+    <table class="table table-sm align-middle">
+        <thead class="bg-light">
+            <tr style="font-size: 0.6rem; color: #888;">
+                <th>APPLICATION</th>
+                <th>SUBMITTED</th>
+                <th>APPROVED</th>
+                <th>CLAIMED</th>
+                <th class="text-end">FINALIZED ON</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in history_apps %}
+            <tr>
+                <td class="small fw-bold">#APP-{{ app.id }} <br> <span class="text-muted" style="font-size: 0.6rem;">{{ app.adopter_name }}</span></td>
+                <td class="small text-muted">{{ app.application_date.strftime('%m/%d %H:%M') if app.application_date }}</td>
+                <td class="small text-muted">{{ app.approval_date.strftime('%m/%d %H:%M') if app.approval_date else 'N/A' }}</td>
+                <td class="small text-muted">{{ app.pickup_date.strftime('%m/%d %H:%M') if app.pickup_date else 'N/A' }}</td>
+                <td class="text-end small text-muted">
+                    {% if app.status == 'Claimed' %}
+                        <span class="text-success">Claimed: {{ app.claim_date.strftime('%m/%d %H:%M') if app.claim_date else 'N/A' }}</span>
+                    {% elif app.status == 'Returned' %}
+                        <span class="text-danger">Returned: {{ app.return_date.strftime('%m/%d %H:%M') if app.return_date else 'N/A' }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted small italic">No archived transactions yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+        </div>
+    </div>
+</div>
+<div class="row mt-5"></div>
+    <div class="col-12">    
+        <div class="card p-4">     
+                <h5 class="fw-bold mb-3">System Activity Logs</h5>  
+
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+
+                    <table class="table align-middle table-hover">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th>Timestamp</th>
+
+                                <th>Staff Identity</th>
+
+                                <th>Action Performed</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for log in logs %}
+
+                            <tr>
+
+                                <td class="small text-muted">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+
+                                <td><span class="badge rounded-0 border text-dark fw-bold" style="font-size: 0.65rem;">{{ log.admin_username }}</span></td>
+
+                                <td class="small">{{ log.action }}</td>
+
+                            </tr>
+
+                            {% else %}
+
+                            <tr>
+
+                                <td colspan="3" class="text-center text-muted py-4 small">No system activity recorded yet.</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+    
+    const now = new Date();
+    
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const minDateTime = now.toISOString().slice(0, 16);
+    
+    dateInputs.forEach(input => {
+        input.setAttribute('min', minDateTime);
+        
+        input.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const day = selectedDate.getDay();  
+            const hours = selectedDate.getHours();
+            
+            if (day === 0) {
+                alert("The Sanctuary is closed on Sundays. Please select a Monday to Saturday.");
+                this.value = "";
+                return;
+            }
+            
+    
+            if (hours < 9 || hours >= 16) {
+                alert("Please schedule appointments between our operating hours: 9:00 AM to 4:00 PM.");
+                this.value = "";
+                return;
+            }
+        });
+    });
+});
+</script>
+
+</body>
+
+</html>

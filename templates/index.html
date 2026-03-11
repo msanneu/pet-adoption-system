@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetAdopt | Professional Pet Sanctuary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary-navy: #1a2a3a; 
+            --accent-gold: #c5a059; 
+            --bg-cream: #fdfdfb; 
+            --text-main: #333333;
+            --border-light: #e0e0e0;
+            --footer-bg: #f4f4f2;
+        }
+
+        /* Fixed Scrolling Offset Fix */
+        html { scroll-behavior: smooth; } 
+        [id] { scroll-margin-top: 120px; } 
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); color: var(--text-main); line-height: 1.7; overflow-x: hidden; }
+        h1, h2, h3, .navbar-brand { font-family: 'Playfair Display', serif; }
+
+        /* Navbar Styling */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.2rem 0;
+        }
+        .navbar-brand { 
+            font-size: 1.6rem; 
+            color: var(--primary-navy) !important; 
+            letter-spacing: 1px; 
+            
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar-logo { height: 32px; width: auto; fill: var(--accent-gold); }
+        .nav-link { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-main) !important; font-weight: 600; }
+
+        /* Hero Styling */
+        .hero { 
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1350&q=80'); 
+            height: 75vh; background-size: cover; background-position: center; color: white; 
+            display: flex; align-items: center; border-bottom: 8px solid var(--accent-gold);
+        }
+
+        .btn-classic {
+            background: var(--accent-gold); color: white;
+            padding: 16px 45px; border-radius: 0; 
+            text-transform: uppercase; font-weight: 600; letter-spacing: 2px; font-size: 0.85rem;
+            transition: 0.4s; border: 1px solid var(--accent-gold);
+            text-decoration: none; display: inline-block;
+        }
+        .btn-classic:hover { background: transparent; color: white; border-color: white; }
+
+        /* Enhanced Button Styling */
+        .btn-gallery {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .btn-view {
+            background: transparent;
+            color: var(--primary-navy);
+            border: 1px solid var(--primary-navy);
+        }
+
+        .btn-view:hover {
+            background: var(--primary-navy);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .btn-add-cart {
+            background: white;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+        }
+
+        .btn-add-cart:hover {
+            background: var(--accent-gold);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(197, 160, 89, 0.2);
+        }
+
+        .btn-adopt-now {
+            background: var(--primary-navy);
+            color: white;
+            border: 1px solid var(--primary-navy);
+        }
+
+        .btn-adopt-now:hover {
+            background: #2c3e50;
+            transform: translateY(-3px);
+        }
+
+        /* Icon refinement */
+        .btn-gallery svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Sections Styling */
+        .mv-section { background: #fff; padding: 100px 0; border-bottom: 1px solid var(--border-light); }
+        .mandate-box { padding: 40px; border-left: 1px solid var(--border-light); }
+        .mandate-box.gold-border { border-left: 3px solid var(--accent-gold); background: #fcfaf5; }
+
+        .value-card { border: none; border-top: 1px solid var(--border-light); padding: 40px 20px; transition: 0.3s; }
+        .value-card:hover { background: #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.03); }
+        .value-number { font-family: 'Playfair Display'; color: var(--accent-gold); font-size: 2rem; margin-bottom: 1rem; }
+
+        .journey-img { border: 12px solid white; box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
+
+        .pet-card { border-radius: 0; border: 1px solid var(--border-light); background: #fff; transition: 0.4s; }
+        .pet-card:hover { transform: translateY(-5px); border-color: var(--accent-gold); }
+        
+        .modal-content { border-radius: 0; border: none; }
+        .data-label { font-size: 0.65rem; letter-spacing: 1.5px; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; }
+        .physical-box, .medical-box { background: #f9f9f9; padding: 25px; border: 1px solid #f0f0f0; }
+
+        /* Footer Styling */
+        footer { 
+            background: var(--footer-bg); 
+            color: var(--text-main); 
+            padding-top: 80px; 
+            border-top: 1px solid var(--border-light);
+        }
+        footer h5 { 
+            color: var(--primary-navy); 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            letter-spacing: 2px; 
+            margin-bottom: 1.8rem; 
+            text-transform: uppercase;
+        }
+        footer a { color: var(--text-main); text-decoration: none; transition: 0.3s; }
+        footer a:hover { color: var(--accent-gold); }
+        .footer-divider { opacity: 0.1; border-top: 1px solid var(--primary-navy); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <svg class="navbar-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.5 5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm7 0c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm-11 5c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm15 0c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm-7.5 2c-3.04 0-5.5 2.46-5.5 5.5s2.46 5.5 5.5 5.5 5.5-2.46 5.5-5.5-2.46-5.5-5.5-5.5z"/>
+                </svg>
+                PETADOPT
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link px-4" href="#origin">The Journey</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="#pets">The Gallery</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="#contact">Contact</a></li>
+                <li class="nav-item"><a class="nav-link px-4" href="#faq">FAQs</a></li>
+
+                            <li class="nav-item">
+                    <a class="nav-link px-4 position-relative" href="/cart">
+                        MY LIST 
+                        {% if session.get('cart') %}
+                            <span class="badge rounded-pill bg-danger" style="font-size: 0.6rem; position: absolute; top: 5px; right: 20px;">
+                                {{ session['cart']|length }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
+                
+                {# 1. IF ADMIN IS LOGGED IN #}
+                {% if session.get('admin_id') %}
+                    <li class="nav-item"><a class="nav-link px-4 fw-bold text-danger" href="/admin/dashboard">STAFF PANEL</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" href="/admin/logout">LOGOUT</a></li>
+
+                {# 2. ELIF ADOPTER IS LOGGED IN (And NOT an admin) #}
+                {% elif session.get('user_id') %}
+                    <li class="nav-item"><a class="nav-link px-4 fw-bold text-primary" href="/dashboard">MY DASHBOARD</a></li>
+                    <li class="nav-item"><a class="nav-link px-4" href="/logout">LOGOUT</a></li>
+
+                {# 3. IF NO ONE IS LOGGED IN #}
+                {% else %}
+                    <li class="nav-item"><a class="nav-link px-4" href="/login">LOGIN</a></li>
+                {% endif %}
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-0 border-0" role="alert" style="background: {% if category == 'success' %}#e7f3ef{% else %}#f8d7da{% endif %}; color: #1a2a3a;">
+                    <div class="d-flex align-items-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <strong>Notification:</strong>&nbsp;{{ message }}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+    <div class="hero">
+        <div class="container text-center text-md-start">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h1 class="display-1 fw-bold mb-4">A Legacy of <br><span style="color: var(--accent-gold);">Compassion.</span></h1>
+                    <p class="lead mb-5 opacity-75 fs-4">Standardizing the transition between life-long companions and responsible guardians.</p>
+                    <a href="#pets" class="btn btn-classic">Browse Available Adoptions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="mv-section">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-6 mandate-box gold-border">
+                    <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--accent-gold); letter-spacing: 3px;">The Mandate</h6>
+                    <h2 class="mb-4">Standardized Care</h2>
+                    <p class="text-muted">We provide a structured, professional digital sanctuary for domestic animals, ensuring every placement occurs within a vetted and stable environment.</p>
+                </div>
+                <div class="col-md-6 mandate-box">
+                    <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--accent-gold); letter-spacing: 3px;">The Vision</h6>
+                    <h2 class="mb-4">A Future Without Abandonment</h2>
+                    <p class="text-muted">Utilizing modern logistics and community education to eliminate pet displacement, creating a world where every pet is treated as a life-long commitment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container my-5 py-5">
+        <div class="row g-4 mt-2 text-center text-md-start">
+            <div class="col-md-4 value-card">
+                <div class="value-number">01</div>
+                <h5 class="fw-bold text-uppercase small ls-2 mb-3">Integrity</h5>
+                <p class="small text-muted">Complete transparency regarding clinical health records and the behavioral history of every rescue under our management.</p>
+            </div>
+            <div class="col-md-4 value-card">
+                <div class="value-number">02</div>
+                <h5 class="fw-bold text-uppercase small ls-2 mb-3">Compassion</h5>
+                <p class="small text-muted">Professional welfare standards that honor the dignity of every animal throughout the transition to their permanent home.</p>
+            </div>
+            <div class="col-md-4 value-card">
+                <div class="value-number">03</div>
+                <h5 class="fw-bold text-uppercase small ls-2 mb-3">Vigilance</h5>
+                <p class="small text-muted">A rigorous post-adoption framework and support system to ensure the enduring success of our residential placements.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="origin" class="container my-5 py-5 border-top">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" class="img-fluid journey-img" alt="Sanctuary Office">
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-uppercase fw-bold mb-3" style="color: var(--accent-gold); letter-spacing: 2px;">Established October 2024</h6>
+                <h2 class="display-5 fw-bold mb-4">The Foundation Story</h2>
+                <p class="text-muted mb-4">PetAdopt was founded in Marikina City by <strong>Patch</strong>. What began as a localized rescue effort for abandoned kittens has matured into a premier digital welfare agency.</p>
+                <div class="d-flex gap-5">
+                    <div><h3 class="fw-bold mb-0">500+</h3><small class="text-muted text-uppercase smaller">Successful Placements</small></div>
+                    <div><h3 class="fw-bold mb-0">100%</h3><small class="text-muted text-uppercase smaller">Verified Security</small></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container my-5 py-5" id="pets">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">The Adoption Gallery</h2>
+            <div style="width:60px; height:3px; background:var(--accent-gold); margin: 20px auto;"></div>
+        </div>
+
+        <div class="row g-4">
+            {% for pet in pets %}
+            <div class="col-md-4">
+                <div class="card pet-card h-100">
+                    <img src="{{ url_for('static', filename='uploads/' + pet.photo) if pet.photo else 'https://via.placeholder.com/300' }}" class="card-img-top" style="height: 380px; object-fit: cover;">
+                    <div class="card-body p-4 text-center">
+                        <h4 class="fw-bold mb-1">{{ pet.name }}</h4>
+                        <p class="text-muted small text-uppercase mb-4" style="letter-spacing: 1.5px;">{{ pet.breed }}</p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('add_to_cart', pet_id=pet.id) }}" class="btn-gallery btn-add-cart">
+                                <svg fill="currentColor" viewBox="0 0 24 24" width="16"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                Add to List
+                            </a>
+                            
+                            <div class="d-flex gap-2">
+                                <button class="btn-gallery btn-view w-100" data-bs-toggle="modal" data-bs-target="#modal{{ pet.id }}">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Details
+                                </button>
+                                <a href="/adopt/{{ pet.id }}" class="btn-gallery btn-adopt-now w-100">Adopt</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal{{ pet.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content shadow-lg">
+                        <div class="modal-header border-0 pb-0"><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                        <div class="modal-body p-0">
+                            <div class="row g-0">
+                                <div class="col-md-6">
+                                    <img src="{{ url_for('static', filename='uploads/' + pet.photo) if pet.photo else 'https://via.placeholder.com/300' }}" class="img-fluid h-100" style="object-fit: cover;">
+                                </div>
+                                <div class="col-md-6 p-5 text-start">
+                                    <h2 class="fw-bold mb-4">{{ pet.name }}</h2>
+                                    <div class="physical-box mb-4">
+                                        <div class="row g-3">
+                                            <div class="col-6"><span class="data-label">Breed</span><br><strong>{{ pet.breed }}</strong></div>
+                                            <div class="col-6"><span class="data-label">Age</span><br><strong>{{ pet.age_category }}</strong></div>
+                                            <div class="col-6"><span class="data-label">Size</span><br><strong>{{ pet.size }}</strong></div>
+                                            <div class="col-6"><span class="data-label">Gender</span><br><strong>{{ pet.gender }}</strong></div>
+                                        </div>
+                                    </div>
+                                    <div class="medical-box">
+                                        <div class="mb-2"><span class="data-label">Vaccination</span><br><strong>{{ pet.vac_status }}</strong></div>
+                                        <div class="mb-2"><span class="data-label">Fixed</span><br><strong>{{ pet.spayed_neutered }}</strong></div>
+                                        <div><span class="data-label">Health Notes</span><br><small>{{ pet.special_needs if pet.special_needs and pet.special_needs != "N/A" else "Standard Wellness Verified" }}</small></div>
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-3 border-top">
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <a href="{{ url_for('add_to_cart', pet_id=pet.id) }}" class="btn-gallery btn-add-cart w-100 py-3">
+                                                    Add to List
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="/adopt/{{ pet.id }}" class="btn-gallery btn-adopt-now w-100 py-3">
+                                                    Adopt Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <p class="mt-3 mb-0 x-small text-muted text-center" style="font-size: 0.65rem;">
+                                            Standard Welfare Verification Required
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="container my-5 py-5 border-top" id="faq">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Frequently Asked Questions</h2>
+            <div style="width:60px; height:3px; background:var(--accent-gold); margin: 20px auto;"></div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="accordion" id="faqAccordion">
+                    
+                    <div class="accordion-item border-0 border-bottom mb-3">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed fw-bold shadow-none bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" style="color: var(--primary-navy);">
+                                What are your operating hours?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                Our sanctuary is open for scheduled pickups and visits from <strong>Monday to Friday (9:00 AM - 4:00 PM)</strong> and <strong>Saturday (10:00 AM - 2:00 PM)</strong>. We are closed on Sundays to give our staff and animals a day of rest.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 border-bottom mb-3">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed fw-bold shadow-none bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" style="color: var(--primary-navy);">
+                                Where are you located?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                We are proudly located in <strong>Marikina City, Philippines</strong>. Exact sanctuary directions will be provided in your approval email to ensure the security and privacy of our rescues.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0 border-bottom mb-3">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed fw-bold shadow-none bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" style="color: var(--primary-navy);">
+                                How does the adoption process work?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                <ol class="mb-0 ps-3" style="line-height: 2;">
+                                    <li><strong>Create an Account:</strong> Register on our portal to begin your journey.</li>
+                                    <li><strong>Select Companions:</strong> Use <em>"Add to List"</em> if you wish to apply for multiple pets in one unified application, or click <em>"Adopt Now"</em> to proceed immediately with a single pet.</li>
+                                    <li><strong>Submit Application:</strong> Fill out the formal application, answer our compatibility questionnaires, and upload a clear copy of your valid Government ID.</li>
+                                    <li><strong>Review Period:</strong> Wait for our staff to review your application. You will receive an email notification, and your Adopter Dashboard will update to reflect an "Approved" or "Declined" status.</li>
+                                    <li><strong>Schedule Pickup:</strong> Once approved, log in to your dashboard to select an available claiming date and time.</li>
+                                    <li><strong>Claim Your Pet:</strong> Visit the shelter at your scheduled time. <strong>You must bring your physical valid ID</strong> for final verification before taking your new companion home!</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="pb-5">
+        <div class="container text-center text-md-start">
+            <div class="row g-5">
+                <div class="col-md-4">
+                    <h5>PETADOPT</h5>
+                    <p class="small">Ethical transition of domestic animals into permanent homes. Professional Welfare Standards since 2024.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>CONTACT</h5>
+                    <p class="small mb-1">📍 Marikina City, Philippines</p>
+                    <p class="small mb-1">📞 +63 912 345 6789</p>
+                    <p class="small">📧 thepetadoption@gmail.com</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>DONATIONS</h5>
+                    <p class="small mb-1">GCash: 09123456789</p>
+                    <p class="small mb-1">BPI: 1234-5678-90</p>
+                    <p class="small">Yce Jedrick Sarabia</p>
+                </div>
+                <div class="col-md-2">
+                <h5>PORTAL</h5>
+                {% if session.get('admin_id') %}
+                    <p class="small mb-1"><a href="/admin/dashboard">Admin Dashboard</a></p>
+                    <p class="small"><a href="/admin/logout">Staff Logout</a></p>
+                {% elif session.get('user_id') %}
+                    <p class="small mb-1"><a href="/dashboard">My Dashboard</a></p>
+                    <p class="small"><a href="/logout">Adopter Logout</a></p>
+                {% else %}
+                    <p class="small mb-1"><a href="/admin/login">Staff Login</a></p>
+                    <p class="small"><a href="/login">Adopter Login</a></p>
+                {% endif %}
+            </div>
+            </div>
+            <div class="footer-divider"></div>
+            <p class="text-center small opacity-40 mt-4" style="font-size: 0.7rem;">&copy; 2026 PetAdopt Philippines. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
