@@ -16,7 +16,11 @@ from authlib.integrations.flask_client import OAuth
 app = Flask(__name__)
 app.secret_key = "petadopt_secret_2026_key"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@localhost/pet_adoption" 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 
+    'mysql+pymysql://root:@localhost/pet_adoption'
+)
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 oauth = OAuth(app)
@@ -1237,4 +1241,5 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':  
+
     app.run(debug=True)
