@@ -1,0 +1,124 @@
+/* --- CSS Variables & Root --- */
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a29bfe;
+    --accent-color: #ff7675;
+    --accent-gold: #D4AF37; 
+    --bg-color: #f9f9fb;
+    --navy-dark: #2c3e50;
+    --white: #ffffff;
+}
+
+/* --- General Styles --- */
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2d3436;
+    line-height: 1.6;
+}
+
+/* --- Navigation --- */
+.navbar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+/* --- Component: Cards --- */
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    overflow: hidden; /* Ensures gradients don't leak past rounded corners */
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(108, 92, 231, 0.12);
+}
+
+/* --- Component: Buttons --- */
+
+/* Primary Button (Purple) */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #5b4bc4;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+/* Gold Outline Button (Used for Reports) */
+.btn-gold-outline {
+    display: inline-block;
+    color: var(--accent-gold) !important;
+    border: 2px solid var(--accent-gold) !important;
+    background-color: transparent;
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-gold-outline:hover {
+    background-color: var(--accent-gold);
+    color: var(--white) !important;
+    box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
+    transform: translateY(-3px);
+}
+
+/* --- Forms --- */
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #dfe6e9;
+    padding: 12px;
+    transition: border-color 0.3s ease;
+}
+
+/* Custom Background for the Active Tasks Badge */
+.bg-navy {
+    background-color: var(--navy-dark) !important;
+    color: #ffffff !important;
+}
+
+/* Custom Gold Badge (optional, if you want to swap colors) */
+.bg-gold {
+    background-color: var(--accent-gold) !important;
+    color: #ffffff !important;
+}
+
+/* Helper for the "x-small" text used in your table */
+.x-small {
+    font-size: 0.65rem;
+}
+
+/* Ensure the total count badge looks clean */
+.badge.bg-navy {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+/* --- Utility Classes (Matches your HTML) --- */
+.ls-1 { letter-spacing: 1px; }
+.ls-2 { letter-spacing: 2px; }
+
+.opacity-75 { opacity: 0.75; }

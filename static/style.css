@@ -1,0 +1,154 @@
+.p{
+    color: white;
+}
+
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a29bfe;
+    --accent-color: #ff7675;
+    --bg-color: #f9f9fb;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2d3436;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #eee;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(108, 92, 231, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+}
+
+.btn-gold-outline {
+    color: #D4AF37;          /* High-contrast Gold */
+    border: 2px solid #D4AF37; 
+    border-color: #D4AF37 !important;
+    opacity: 1 !important; /* Ensures it isn't see-through */
+    background-color: transparent;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.report-button {
+  background-color: #bdc5cd; /* Your current dark color */
+  color: #ffffff;            /* High contrast text */
+  padding: 15px 30px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Styling for the Full Impact Report Button */
+.impact-report-btn {
+  /* Match the dark slate background from your image */
+  background-color: #2c3e50; 
+  
+  /* FIX: High contrast white text for readability */
+  color: #ffffff; 
+  
+  /* Padding creates the rectangular shape */
+  padding: 16px 32px;
+  
+  /* Slight rounding for a modern feel */
+  border-radius: 4px;
+  
+  /* Text styling */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  
+  /* Remove default button styling */
+  border: none;
+  cursor: pointer;
+  
+  /* Smooth transition for the hover effect */
+  transition: all 0.3s ease;
+  
+  /* Optional: subtle shadow for depth */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover State: Changes color and lifts slightly */
+.impact-report-btn:hover {
+  background-color: #4e5153; /* Slightly lighter slate */
+  transform: translateY(-2px); /* Subtle "lift" effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active State: When the button is clicked */
+.impact-report-btn:active {
+  transform: translateY(0);
+}
+
+.report-button:hover {
+  background-color: #3e5871; /* Slightly lighter on hover */
+}
+
+.btn-gold-outline:hover {
+    background-color: #D4AF37; /* Fills in on hover */
+    color: #ffffff;            /* White text when filled */
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* Fix for the invisible "Total Active Tasks" badge */
+.bg-navy {
+    background-color: #001f3f !important; /* Solid Navy Blue */
+    color: #ffffff !important;           /* Force White Text */
+    padding: 8px 16px;                   /* Better spacing */
+    border-radius: 6px;                  /* Clean corners */
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Makes it pop */
+}
+
+/* Custom Gold Badge (optional, if you want to swap colors) */
+.bg-gold {
+    background-color: var(--accent-gold) !important;
+    color: #ffffff !important;
+}
+
+/* Helper for the "x-small" text used in your table */
+.x-small {
+    font-size: 0.65rem;
+}
+
+/* Ensure the total count badge looks clean */
+.badge.bg-navy {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #dfe6e9;
+    padding: 12px;
+}
